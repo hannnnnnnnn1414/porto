@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hanif Fathurrahman — Full Stack Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #111118;
+      --bg3: #16161f;
+      --border: #2a2a3a;
+      --accent: #7c6aff;
+      --accent2: #ff6a88;
+      --accent3: #6affcb;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* GRID BACKGROUND */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-logo span { color: var(--muted); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* SECTIONS */
+    section { position: relative; z-index: 1; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent3);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    .hero-tag::before { content: '// '; color: var(--muted); }
+
+    h1 {
+      font-family: var(--mono);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.3s forwards;
+    }
+
+    h1 .line1 { display: block; color: var(--text); }
+    h1 .line2 { display: block; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 3rem;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.4s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      padding: 0.8rem 2rem;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #9b8dff; transform: translateY(-2px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    .hero-scroll {
+      margin-top: 5rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.7s forwards;
+    }
+
+    .hero-scroll::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ABOUT */
+    #about {
+      padding: 6rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label::before { content: '[ '; }
+    .section-label::after { content: ' ]'; }
+
+    h2 {
+      font-family: var(--mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      font-size: 0.98rem;
+      margin-bottom: 1.2rem;
+      font-weight: 300;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .skill-chip {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 0.5rem 0.8rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .skill-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    .skill-chip .cat {
+      display: block;
+      font-size: 0.6rem;
+      color: var(--muted);
+      margin-bottom: 0.1rem;
+    }
+
+    /* EXPERIENCE */
+    #experience {
+      padding: 6rem 3rem;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .exp-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .exp-header {
+      margin-bottom: 4rem;
+    }
+
+    .exp-card {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 3rem;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .exp-card:last-child { border-bottom: none; }
+
+    .exp-meta {
+      position: sticky;
+      top: 8rem;
+      align-self: start;
+    }
+
+    .exp-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent3);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .exp-company {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .exp-type {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .exp-role {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .exp-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .exp-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .exp-bullets li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .exp-bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* PROJECTS */
+    #projects {
+      padding: 6rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .proj-header { margin-bottom: 4rem; }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .proj-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      transition: border-color 0.25s, transform 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .proj-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .proj-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .proj-card:hover::before { transform: scaleX(1); }
+
+    .proj-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .proj-title {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .proj-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .proj-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    /* CONTACT */
+    #contact {
+      padding: 8rem 3rem;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+    }
+
+    .contact-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact-title {
+      font-family: var(--mono);
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .contact-title span { color: var(--accent); }
+
+    .contact-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 3rem;
+      font-weight: 300;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.8rem 1.8rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .contact-link svg { width: 15px; height: 15px; fill: currentColor; }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      #about { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+      #experience { padding: 4rem 1.5rem; }
+      .exp-card { grid-template-columns: 1fr; gap: 1rem; }
+      .exp-meta { position: static; }
+      #projects { padding: 4rem 1.5rem; }
+      #contact { padding: 5rem 1.5rem; }
+      footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">HFR<span>.dev</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <p class="hero-tag">FULL STACK DEVELOPER</p>
+    <h1>
+      <span class="line1">Hanif</span>
+      <span class="line2">Fathurrahman.</span>
+    </h1>
+    <p class="hero-sub">
+      Building web applications that turn complex business processes into clean, efficient digital systems — from backend logic to pixel-perfect interfaces.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+    <p class="hero-scroll">scroll to explore</p>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-left reveal">
+      <p class="section-label">ABOUT</p>
+      <h2>Code.<br/>Problem.<br/>Solve.</h2>
+    </div>
+    <div class="about-text reveal">
+      <p>
+        Full Stack Developer currently interning at PT Kayaba Indonesia, building internal web systems that directly impact business operations — from budget digitalization to stock monitoring and employee assessments.
+      </p>
+      <p>
+        I study Industrial Automotive Information Systems at Politeknik STMI Jakarta, where I've developed a strong foundation in both software development and data analysis through specializations in Data Mining, Decision Support Systems, and Business Intelligence.
+      </p>
+      <p>
+        I thrive in fast-paced environments that require quick adaptation, clean code, and close collaboration with end users.
+      </p>
+      <div class="skills-grid">
+        <div class="skill-chip"><span class="cat">backend</span>Laravel</div>
+        <div class="skill-chip"><span class="cat">frontend</span>Bootstrap / JS</div>
+        <div class="skill-chip"><span class="cat">database</span>MySQL</div>
+        <div class="skill-chip"><span class="cat">api</span>RESTful API</div>
+        <div class="skill-chip"><span class="cat">runtime</span>Node.js</div>
+        <div class="skill-chip"><span class="cat">orm</span>Prisma</div>
+        <div class="skill-chip"><span class="cat">version control</span>Git / GitHub</div>
+        <div class="skill-chip"><span class="cat">data</span>Data Analysis</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="exp-inner">
+      <div class="exp-header reveal">
+        <p class="section-label">EXPERIENCE</p>
+        <h2>Where I've<br/>Been Working</h2>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-meta">
+          <p class="exp-date">JAN 2025 — PRESENT</p>
+          <p class="exp-company">PT KAYABA INDONESIA</p>
+          <p class="exp-type">Internship · On-site</p>
+          <p class="exp-type">Cikarang Barat, Jawa Barat</p>
+        </div>
+        <div class="exp-content">
+          <p class="exp-role">Full Stack Developer</p>
+          <p class="exp-desc">
+            Contributed to the development and enhancement of multiple internal web-based systems across various departments — covering everything from design to deployment using an Agile-like development workflow.
+          </p>
+          <ul class="exp-bullets">
+            <li>Built and maintained web apps using Laravel (backend) and Bootstrap/HTML/CSS/JS (frontend)</li>
+            <li>Designed and managed MySQL databases including table structures and query optimization</li>
+            <li>Developed system flowcharts to translate business requirements into technical workflows</li>
+            <li>Managed version control and code reviews using Git & GitHub</li>
+            <li>Performed troubleshooting and feature improvements based on user feedback</li>
+            <li>Delivered rapid feature iterations in a fast-paced, XP-like development environment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="proj-header reveal">
+      <p class="section-label">PROJECTS</p>
+      <h2>Things I've<br/>Built</h2>
+    </div>
+    <div class="projects-grid">
+
+      <div class="proj-card reveal">
+        <p class="proj-num">01 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Stock Opname OCR Monitoring System</p>
+        <p class="proj-desc">Automated stock opname data extraction from physical documents using OCR with a real-time monitoring dashboard, reducing manual input significantly.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Verihubs OCR API</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <p class="proj-num">02 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Recruitment System Enhancement</p>
+        <p class="proj-desc">Enhanced the recruitment system with AES data encryption for sensitive applicant documents and OCR-based automatic verification of KTP and diploma files.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Verihubs OCR API</span>
+          <span class="tag">Data Encryption</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <p class="proj-num">03 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Digitalized Master Budget System</p>
+        <p class="proj-desc">Replaced manual Excel-based budget workflows with a structured web system featuring multi-level approval chains — cutting process time from months to days.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Excel Import/Export</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <p class="proj-num">04 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Stock Monitoring System (Dashboard & API)</p>
+        <p class="proj-desc">End-to-end stock monitoring with an internal dashboard and RESTful API for supplier integration, enabling real-time data sync and multi-supplier management.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">RESTful API</span>
+          <span class="tag">Excel Import/Export</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <p class="proj-num">05 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Employee Performance Assessment System</p>
+        <p class="proj-desc">Digital performance assessment platform for HR with multi-criteria evaluation, Excel import/export, and a summary dashboard for management reporting.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Excel Import/Export</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <p class="proj-num">06 — PT KAYABA INDONESIA</p>
+        <p class="proj-title">Document Control System</p>
+        <p class="proj-desc">Web-based document management system with structured upload → review → QMS approval → department distribution workflow, with role-based access control.</p>
+        <div class="proj-stack">
+          <span class="tag">Laravel</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Role-Based Access</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner reveal">
+      <p class="section-label">CONTACT</p>
+      <h2 class="contact-title">Let's Build<br/><span>Something</span> Together</h2>
+      <p class="contact-sub">Open to new opportunities, collaborations, and interesting projects.</p>
+      <div class="contact-links">
+        <a href="mailto:haniffathurrahmanrustanto@gmail.com" class="contact-link">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Email Me
+        </a>
+        <a href="https://www.linkedin.com/in/hanif-fathurrahman-rustanto" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/hannnnnnnnn1414" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+          GitHub
+        </a>
+        <a href="tel:+6287780536163" class="contact-link">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          +62 877 8053 6163
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2025 Hanif Fathurrahman Rustanto</span>
+    <span>Jakarta Utara, Indonesia</span>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Smooth active nav
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 150) current = s.id;
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
