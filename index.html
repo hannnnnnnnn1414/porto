@@ -963,6 +963,20 @@
         letter-spacing: 0.1em;
       }
 
+      .nav-logo a {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--accent);
+        transition: opacity 0.2s;
+      }
+
+      .nav-logo a:hover {
+        opacity: 1;
+        color: var(--text);
+      }
+
       /*#typingTarget::after {
         content: "|";
         color: var(--accent);
@@ -993,17 +1007,7 @@
     <!-- NAV -->
     <nav>
       <div class="nav-logo">
-        <a
-          href="https://instagram.com/haniv_fr"
-          target="_blank"
-          style="
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            color: inherit;
-          "
-        >
+        <a href="https://instagram.com/haniv_fr" target="_blank">
           <svg
             width="16"
             height="16"
