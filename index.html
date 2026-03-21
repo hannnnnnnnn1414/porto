@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hanif Fathurrahman — Full Stack Developer</title>
     <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='none'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='700' font-size='16' fill='none' stroke='white' stroke-width='1' letter-spacing='-0.5'%3EHF%3C/text%3E%3C/svg%3E"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
@@ -813,13 +818,217 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* CUSTOM CURSOR */
+      *,
+      *::before,
+      *::after {
+        cursor: none !important;
+      }
+
+      .cursor-dot {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.1s ease,
+          background 0.2s;
+      }
+
+      .cursor-ring {
+        position: fixed;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99998;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s,
+          height 0.2s,
+          border-color 0.2s,
+          opacity 0.2s;
+        opacity: 0.5;
+      }
+
+      .cursor-ring.hovered {
+        width: 48px;
+        height: 48px;
+        border-color: var(--accent2);
+        opacity: 0.8;
+      }
+
+      /* DARK/LIGHT TOGGLE */
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 0.4rem 0.7rem;
+        cursor: none;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* LIGHT MODE OVERRIDES */
+      body.light {
+        --bg: #f4f4f8;
+        --bg2: #eaeaf0;
+        --bg3: #dddde8;
+        --border: #c8c8d8;
+        --text: #111118;
+        --muted: #666678;
+      }
+
+      body.light nav {
+        background: rgba(244, 244, 248, 0.88);
+      }
+
+      /* LOADING SCREEN */
+      #loader {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        transition:
+          opacity 0.5s ease,
+          visibility 0.5s ease;
+      }
+
+      #loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loader-name {
+        font-family: var(--mono);
+        font-size: 1rem;
+        color: var(--accent);
+        letter-spacing: 0.2em;
+      }
+
+      .loader-bar-wrap {
+        width: 180px;
+        height: 2px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .loader-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 2px;
+        animation: loadProgress 1.4s ease forwards;
+      }
+
+      @keyframes loadProgress {
+        0% {
+          width: 0%;
+        }
+        60% {
+          width: 75%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      .loader-percent {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+
+      /*#typingTarget::after {
+        content: "|";
+        color: var(--accent);
+        animation: blink 0.7s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }*/
     </style>
   </head>
   <body>
+    <!-- CUSTOM CURSOR -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- LOADING SCREEN -->
+    <div id="loader">
+      <p class="loader-name">HFR.dev</p>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar" id="loaderBar"></div>
+      </div>
+      <p class="loader-percent" id="loaderPercent">0%</p>
+    </div>
+
     <!-- NAV -->
     <nav>
-      <div class="nav-logo">HFR<span>.dev</span></div>
+      <div class="nav-logo">
+        <a
+          href="https://instagram.com/haniv_fr"
+          target="_blank"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+          "
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle
+              cx="17.5"
+              cy="6.5"
+              r="1"
+              fill="currentColor"
+              stroke="none"
+            />
+          </svg>
+          haniv_fr
+        </a>
+      </div>
       <ul class="nav-links">
+        <button class="theme-toggle" id="themeToggle">◐ light</button>
         <li><a href="#about">about</a></li>
         <li><a href="#experience">experience</a></li>
         <li><a href="#projects">projects</a></li>
@@ -832,7 +1041,7 @@
       <p class="hero-tag">FULL STACK DEVELOPER</p>
       <h1>
         <span class="line1">Hanif</span>
-        <span class="line2">Fathurrahman.</span>
+        <span class="line2" id="typingTarget"></span>
       </h1>
       <p class="hero-sub">
         Building web applications that turn complex business processes into
@@ -1258,6 +1467,151 @@
       src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
     ></script>
     <script>
+      // FLOATING STARS
+      const canvas = document.createElement("canvas");
+      canvas.style.cssText =
+        "position:fixed;inset:0;z-index:0;pointer-events:none;";
+      document.body.prepend(canvas);
+      const ctx = canvas.getContext("2d");
+
+      let stars = [];
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      function initStars() {
+        stars = Array.from({ length: 120 }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2 + 0.2,
+          opacity: Math.random() * 0.5 + 0.1,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: (Math.random() - 0.5) * 0.5,
+          twinkle: Math.random() * Math.PI * 2,
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
+        }));
+      }
+      initStars();
+
+      function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach((s) => {
+          s.twinkle += s.twinkleSpeed;
+          const alpha = s.opacity + Math.sin(s.twinkle) * 0.15;
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          const isLight = document.body.classList.contains("light");
+          ctx.fillStyle = isLight
+            ? `rgba(80, 70, 120, ${Math.max(0, alpha)})`
+            : `rgba(200, 200, 255, ${Math.max(0, alpha)})`;
+          ctx.fill();
+
+          s.x += s.speedX;
+          s.y += s.speedY;
+
+          // wrap around edges
+          if (s.x < 0) s.x = canvas.width;
+          if (s.x > canvas.width) s.x = 0;
+          if (s.y < 0) s.y = canvas.height;
+          if (s.y > canvas.height) s.y = 0;
+        });
+        requestAnimationFrame(drawStars);
+      }
+      drawStars();
+
+      // LOADING SCREEN
+      const loader = document.getElementById("loader");
+      const loaderPercent = document.getElementById("loaderPercent");
+      let pct = 0;
+      const ticker = setInterval(() => {
+        pct += Math.floor(Math.random() * 12) + 4;
+        if (pct >= 100) {
+          pct = 100;
+          clearInterval(ticker);
+          setTimeout(() => loader.classList.add("hidden"), 300);
+        }
+        loaderPercent.textContent = pct + "%";
+      }, 100);
+
+      // CUSTOM CURSOR
+      const dot = document.getElementById("cursorDot");
+      const ring = document.getElementById("cursorRing");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        dot.style.left = mx + "px";
+        dot.style.top = my + "px";
+      });
+
+      (function animateRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(animateRing);
+      })();
+
+      document
+        .querySelectorAll("a, button, .proj-card, .skill-chip")
+        .forEach((el) => {
+          el.addEventListener("mouseenter", () =>
+            ring.classList.add("hovered"),
+          );
+          el.addEventListener("mouseleave", () =>
+            ring.classList.remove("hovered"),
+          );
+        });
+
+      // DARK/LIGHT TOGGLE
+      const themeToggle = document.getElementById("themeToggle");
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("light");
+        themeToggle.textContent = document.body.classList.contains("light")
+          ? "◐ dark"
+          : "◐ light";
+      });
+
+      const typingTarget = document.getElementById("typingTarget");
+      const typingText = "Fathurrahman.";
+      let typingIndex = 0;
+      let isDeleting = false;
+
+      function typeLoop() {
+        typingTarget.textContent = typingText.slice(0, typingIndex);
+
+        if (!isDeleting && typingIndex === typingText.length) {
+          // Pause sebelum mulai hapus
+          setTimeout(() => {
+            isDeleting = true;
+            typeLoop();
+          }, 2000);
+          return;
+        }
+
+        if (isDeleting && typingIndex === 0) {
+          // Pause sebelum mulai ngetik lagi
+          isDeleting = false;
+          setTimeout(typeLoop, 600);
+          return;
+        }
+
+        typingIndex += isDeleting ? -1 : 1;
+        setTimeout(typeLoop, isDeleting ? 45 : 80);
+      }
+
+      // Delay awal biar nunggu fade-in hero
+      setTimeout(typeLoop, 900);
+
       // Scroll reveal
       const reveals = document.querySelectorAll(".reveal");
       const observer = new IntersectionObserver(
