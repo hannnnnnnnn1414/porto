@@ -710,38 +710,82 @@
         nav {
           padding: 1rem 1.5rem;
         }
+
+        /* Sembunyikan desktop nav */
         .nav-links {
-          gap: 1.5rem;
+          display: none;
         }
+
+        /* Tampilkan container mobile */
+        .nav-mobile-right {
+          display: flex !important;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        /* Tampilkan hamburger */
+        .hamburger {
+          display: flex !important;
+        }
+
+        /* Sesuaikan posisi mobile menu */
+        .mobile-menu {
+          top: 68px;
+        }
+
+        /* Style lainnya */
         #hero {
           padding: 7rem 1.5rem 3rem;
         }
+
         #about {
           grid-template-columns: 1fr;
           gap: 3rem;
           padding: 4rem 1.5rem;
         }
+
         #experience {
           padding: 4rem 1.5rem;
         }
+
         .exp-card {
           grid-template-columns: 1fr;
           gap: 1rem;
         }
+
         .exp-meta {
           position: static;
         }
+
         #projects {
           padding: 4rem 1.5rem;
         }
+
         #contact {
           padding: 5rem 1.5rem;
         }
+
         footer {
           padding: 1.5rem;
           flex-direction: column;
           gap: 0.5rem;
           text-align: center;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Desktop: sembunyikan elemen mobile */
+      @media (min-width: 769px) {
+        .hamburger,
+        .nav-mobile-right {
+          display: none !important;
+        }
+
+        .mobile-menu {
+          display: none;
         }
       }
 
@@ -988,6 +1032,101 @@
           opacity: 0;
         }
       }*/
+
+      /* HAMBURGER BUTTON */
+      .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 0.4rem 0.5rem;
+        cursor: none;
+      }
+
+      .hamburger span {
+        display: block;
+        width: 18px;
+        height: 1.5px;
+        background: var(--muted);
+        transition: all 0.25s ease;
+      }
+
+      .hamburger.open span:nth-child(1) {
+        transform: translateY(5.5px) rotate(45deg);
+        background: var(--accent);
+      }
+
+      .hamburger.open span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+
+      .hamburger.open span:nth-child(3) {
+        transform: translateY(-5.5px) rotate(-45deg);
+        background: var(--accent);
+      }
+
+      /* Mobile nav right container */
+      .nav-mobile-right {
+        display: none;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      /* MOBILE MENU DRAWER */
+      .mobile-menu {
+        position: fixed;
+        top: 70px; /* Adjust based on your nav height */
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+
+      .mobile-menu.open {
+        max-height: 300px;
+      }
+
+      .mobile-menu ul {
+        list-style: none;
+        padding: 0.5rem 0;
+        margin: 0;
+      }
+
+      .mobile-menu ul li a {
+        display: block;
+        padding: 0.85rem 1.5rem;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.1em;
+        border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+        transition:
+          color 0.2s,
+          background 0.2s;
+      }
+
+      .mobile-menu ul li:last-child a {
+        border-bottom: none;
+      }
+
+      .mobile-menu ul li a:hover {
+        color: var(--text);
+        background: rgba(124, 106, 255, 0.07);
+      }
+
+      .mobile-menu ul li a::before {
+        content: "// ";
+        color: var(--accent);
+        opacity: 0.6;
+      }
     </style>
   </head>
   <body>
@@ -1031,6 +1170,8 @@
           haniv_fr
         </a>
       </div>
+
+      <!-- Desktop nav -->
       <ul class="nav-links">
         <button class="theme-toggle" id="themeToggle">◐ light</button>
         <li><a href="#about">about</a></li>
@@ -1038,7 +1179,27 @@
         <li><a href="#projects">projects</a></li>
         <li><a href="#contact">contact</a></li>
       </ul>
+
+      <!-- Mobile nav right -->
+      <div class="nav-mobile-right">
+        <button class="theme-toggle" id="themeToggleMobile">◐ light</button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </nav>
+
+    <!-- Mobile menu drawer (taruh di bawah </nav>, sebelum section hero) -->
+    <div class="mobile-menu" id="mobileMenu">
+      <ul>
+        <li><a href="#about" class="mobile-nav-link">about</a></li>
+        <li><a href="#experience" class="mobile-nav-link">experience</a></li>
+        <li><a href="#projects" class="mobile-nav-link">projects</a></li>
+        <li><a href="#contact" class="mobile-nav-link">contact</a></li>
+      </ul>
+    </div>
 
     <!-- HERO -->
     <section id="hero">
@@ -1673,6 +1834,32 @@
           btn.textContent = "Send Message";
           btn.disabled = false;
         });
+
+      // HAMBURGER MENU
+      const hamburgerBtn = document.getElementById("hamburgerBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const themeToggleMobile = document.getElementById("themeToggleMobile");
+
+      hamburgerBtn.addEventListener("click", () => {
+        hamburgerBtn.classList.toggle("open");
+        mobileMenu.classList.toggle("open");
+      });
+
+      // Close menu when a link is clicked
+      document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          hamburgerBtn.classList.remove("open");
+          mobileMenu.classList.remove("open");
+        });
+      });
+
+      // Sync theme toggle mobile
+      themeToggleMobile.addEventListener("click", () => {
+        document.body.classList.toggle("light");
+        const isLight = document.body.classList.contains("light");
+        themeToggle.textContent = isLight ? "◐ dark" : "◐ light";
+        themeToggleMobile.textContent = isLight ? "◐ dark" : "◐ light";
+      });
     </script>
   </body>
 </html>
