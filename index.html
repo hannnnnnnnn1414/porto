@@ -1127,6 +1127,77 @@
         color: var(--accent);
         opacity: 0.6;
       }
+
+      /* BEAUTIFUL MOON - Pojok Kanan Atas */
+      .moon-container {
+        position: fixed;
+        top: 90px;
+        right: 60px;
+        z-index: 2;
+        width: 110px;
+        height: 110px;
+        pointer-events: none;
+        filter: drop-shadow(0 0 35px rgba(220, 230, 255, 0.65));
+      }
+
+      .moon {
+        width: 100%;
+        height: 100%;
+        animation: moonFloat 18s ease-in-out infinite;
+      }
+
+      @keyframes moonFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-12px) rotate(3deg);
+        }
+      }
+
+      /* MOON - Hanya di Hero */
+      #hero {
+        position: relative; /* Penting! */
+        overflow: hidden; /* biar moon ga keluar */
+      }
+
+      .moon-container {
+        position: absolute;
+        top: 90px;
+        right: 60px;
+        z-index: 1; /* di belakang teks tapi di depan background */
+        width: 110px;
+        height: 110px;
+        pointer-events: none;
+        filter: drop-shadow(0 0 35px rgba(220, 230, 255, 0.65));
+      }
+
+      .moon {
+        width: 100%;
+        height: 100%;
+        animation: moonFloat 18s ease-in-out infinite;
+      }
+
+      @keyframes moonFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-12px) rotate(3deg);
+        }
+      }
+
+      /* Responsive moon di mobile */
+      @media (max-width: 768px) {
+        .moon-container {
+          width: 80px;
+          height: 80px;
+          top: 70px;
+          right: 30px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1203,6 +1274,41 @@
 
     <!-- HERO -->
     <section id="hero">
+      <!-- MOON - Hanya di Hero -->
+      <div class="moon-container">
+        <svg
+          class="moon"
+          viewBox="0 0 200 200"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Glow layer -->
+          <defs>
+            <filter id="moonGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Main Moon -->
+          <circle
+            cx="100"
+            cy="100"
+            r="68"
+            fill="#f0f0ff"
+            filter="url(#moonGlow)"
+          />
+
+          <!-- Craters -->
+          <circle cx="72" cy="78" r="14" fill="#d0d0e8" opacity="0.75" />
+          <circle cx="125" cy="115" r="19" fill="#d0d0e8" opacity="0.65" />
+          <circle cx="65" cy="125" r="9" fill="#d0d0e8" opacity="0.7" />
+          <circle cx="138" cy="72" r="11" fill="#d0d0e8" opacity="0.55" />
+        </svg>
+      </div>
+
       <p class="hero-tag">FULL STACK DEVELOPER</p>
       <h1>
         <span class="line1">Hanif</span>
@@ -1860,6 +1966,148 @@
         themeToggle.textContent = isLight ? "◐ dark" : "◐ light";
         themeToggleMobile.textContent = isLight ? "◐ dark" : "◐ light";
       });
+    </script>
+
+    <script>
+      (function () {
+        const rocketCanvas = document.createElement("canvas");
+        rocketCanvas.style.cssText = `
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1; 
+    pointer-events: none;
+  `;
+
+        // Ambil hero
+        const heroSection = document.getElementById("hero");
+        heroSection.style.position = "relative";
+        heroSection.prepend(rocketCanvas);
+
+        const rctx = rocketCanvas.getContext("2d");
+
+        function resize() {
+          rocketCanvas.width = heroSection.offsetWidth;
+          rocketCanvas.height = heroSection.offsetHeight;
+        }
+
+        window.addEventListener("resize", resize);
+        resize();
+
+        // 🎯 Mouse position
+        let mouse = {
+          x: heroSection.offsetWidth * 0.7,
+          y: heroSection.offsetHeight * 0.4,
+        };
+
+        heroSection.addEventListener("mousemove", (e) => {
+          const rect = heroSection.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left;
+          mouse.y = e.clientY - rect.top;
+        });
+
+        heroSection.addEventListener("mouseleave", () => {
+          mouse.x = heroSection.offsetWidth * 0.7;
+          mouse.y = heroSection.offsetHeight * 0.4;
+        });
+
+        // 🚀 Rocket state
+        let r = {
+          x: heroSection.offsetWidth * 0.72,
+          y: heroSection.offsetHeight * 0.38,
+          angle: -Math.PI / 2,
+          velocity: { x: 0, y: 0 },
+          scale: 0.45,
+          trail: [],
+        };
+
+        function drawRocket(ctx, x, y, angle, scale, alpha) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(angle + Math.PI / 2);
+          ctx.scale(scale, scale);
+          ctx.globalAlpha = alpha;
+
+          ctx.fillStyle = "#ffffff";
+
+          const body = new Path2D(
+            "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z",
+          );
+          ctx.fill(body);
+
+          const wingL = new Path2D("M-9,10 L-18,20 L-9,18 Z");
+          const wingR = new Path2D("M9,10 L18,20 L9,18 Z");
+          ctx.fill(wingL);
+          ctx.fill(wingR);
+
+          // 🔥 Flame
+          ctx.globalAlpha = 0.7 + Math.random() * 0.3;
+          const flen = 12 + Math.random() * 10;
+          ctx.beginPath();
+          ctx.moveTo(-3, 15);
+          ctx.lineTo(3, 15);
+          ctx.lineTo(0, 15 + flen);
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        function animate() {
+          rctx.clearRect(0, 0, rocketCanvas.width, rocketCanvas.height);
+
+          const targetX = mouse.x;
+          const targetY = mouse.y;
+
+          // ⚡ Smooth follow (adaptive speed)
+          const dx = targetX - r.x;
+          const dy = targetY - r.y;
+          const dist = Math.hypot(dx, dy);
+          const speed = Math.min(dist * 0.002, 0.08);
+
+          r.velocity.x = dx * speed;
+          r.velocity.y = dy * speed;
+
+          r.x += r.velocity.x;
+          r.y += r.velocity.y;
+
+          // 🔄 Rotate mengikuti arah gerak
+          const targetAngle = Math.atan2(r.velocity.y, r.velocity.x);
+          let diff = targetAngle - r.angle;
+
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+
+          r.angle += diff * 0.1;
+
+          // ✨ Trail
+          r.trail.push({ x: r.x, y: r.y });
+          if (r.trail.length > 20) r.trail.shift();
+
+          for (let i = 0; i < r.trail.length; i++) {
+            const t = r.trail[i];
+            const ratio = i / r.trail.length;
+
+            rctx.globalAlpha = ratio * 0.25;
+            rctx.fillStyle = "#a5b4fc";
+
+            rctx.beginPath();
+            rctx.arc(t.x, t.y, 3 * ratio, 0, Math.PI * 2);
+            rctx.fill();
+          }
+
+          drawRocket(rctx, r.x, r.y, r.angle, r.scale, 1);
+
+          requestAnimationFrame(animate);
+        }
+
+        // Resize observer biar responsif
+        const resizeObserver = new ResizeObserver(resize);
+        resizeObserver.observe(heroSection);
+
+        animate();
+      })();
     </script>
   </body>
 </html>
