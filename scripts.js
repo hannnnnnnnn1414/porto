@@ -98,6 +98,8 @@
   });
 
   let bullets = [];
+  const isTouchDevice =
+    "ontouchstart" in window || navigator.maxTouchPoints > 0;
   let isFiring = false;
   let fireCooldown = 0;
 
@@ -277,7 +279,10 @@
       }
     }
 
-    if (isFiring && fireCooldown <= 0 && !isGameOver && !isGameWon) {
+    const canShoot =
+      (isFiring || (isGameMode && isTouchDevice)) && !isGameOver && !isGameWon;
+
+    if (canShoot && fireCooldown <= 0) {
       const bulletSpeed = 12;
       const offsetX = Math.cos(r.angle) * 15;
       const offsetY = Math.sin(r.angle) * 15;
