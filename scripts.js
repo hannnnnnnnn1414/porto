@@ -306,3 +306,11 @@ document.querySelectorAll(".mobile-nav-link").forEach((link) => {
     mobileMenu.classList.remove("open");
   });
 });
+
+window.addEventListener("scroll", () => {
+  const scrollProgress = document.getElementById("scrollProgress");
+  const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+  const scrolled = (window.scrollY / scrollTotal) * 100;
+  
+  scrollProgress.style.width = scrolled + "%";
+});

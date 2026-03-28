@@ -17,6 +17,26 @@
   --nav-bg: rgba(10, 10, 15, 0.85);
 }
 
+::-webkit-scrollbar {
+  display: none; 
+}
+
+#scrollProgress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%; 
+  height: 4px; 
+  background: #ffffff;
+  z-index: 999999; 
+  transition: width 0.1s ease-out;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+nav {
+  top: 4px; 
+}
+
 body.light {
   --bg: #fdf6ec;
   --bg2: #f5ede0;
