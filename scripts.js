@@ -761,6 +761,7 @@ window.addEventListener(
   (e) => {
     if (isGameMode && (isGameOver || isGameWon)) {
       initGame();
+      e.preventDefault();
       return;
     }
 
@@ -770,6 +771,7 @@ window.addEventListener(
     if (isGameMode) {
       mouse.x = touch.clientX;
       mouse.y = touch.clientY;
+      e.preventDefault();
     } else {
       const rect = heroSection.getBoundingClientRect();
       mouse.x = touch.clientX - rect.left;
@@ -796,9 +798,16 @@ window.addEventListener(
   { passive: false },
 );
 
-window.addEventListener("touchend", () => {
-  isFiring = false;
-});
+window.addEventListener(
+  "touchend",
+  (e) => {
+    if (isGameMode) {
+      e.preventDefault();
+    }
+    isFiring = false;
+  },
+  { passive: false },
+);
 
 window.addEventListener("touchcancel", () => {
   isFiring = false;
