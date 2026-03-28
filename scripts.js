@@ -170,15 +170,18 @@
 
   const joystickZone = document.getElementById("joystickZone");
   const joystickKnob = document.getElementById("joystickKnob");
-  const fireBtn = document.getElementById("fireBtn");
 
   let joyActive = false;
   let joyVector = { x: 0, y: 0 };
   let joyCenter = { x: 0, y: 0 };
 
   if (joystickZone) {
-    joystickZone.addEventListener("touchstart", handleJoyStart, { passive: false });
-    joystickZone.addEventListener("touchmove", handleJoyMove, { passive: false });
+    joystickZone.addEventListener("touchstart", handleJoyStart, {
+      passive: false,
+    });
+    joystickZone.addEventListener("touchmove", handleJoyMove, {
+      passive: false,
+    });
     joystickZone.addEventListener("touchend", handleJoyEnd);
     joystickZone.addEventListener("touchcancel", handleJoyEnd);
   }
@@ -190,7 +193,7 @@
     const rect = joystickZone.getBoundingClientRect();
     joyCenter = {
       x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
+      y: rect.top + rect.height / 2,
     };
     updateJoyVector(e.touches[0]);
   }
@@ -212,7 +215,7 @@
   function updateJoyVector(touch) {
     let dx = touch.clientX - joyCenter.x;
     let dy = touch.clientY - joyCenter.y;
-    const maxRadius = 60; 
+    const maxRadius = 60;
     let dist = Math.hypot(dx, dy);
 
     if (dist > maxRadius) {
@@ -224,24 +227,6 @@
 
     joyVector.x = dx / maxRadius;
     joyVector.y = dy / maxRadius;
-  }
-
-  if (fireBtn) {
-    fireBtn.addEventListener("touchstart", (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (isGameMode && (isGameOver || isGameWon)) {
-        initGame();
-        return;
-      }
-      isFiring = true;
-    }, { passive: false });
-
-    fireBtn.addEventListener("touchend", (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      isFiring = false;
-    }, { passive: false });
   }
 
   function animate() {
@@ -482,7 +467,7 @@
       let dx, dy, speed;
       if (isGameMode) {
         if (joyActive) {
-          speed = Math.min(Math.hypot(joyVector.x, joyVector.y) * 12, 12);
+          speed = Math.min(Math.hypot(joyVector.x, joyVector.y) * 7, 7);
           let angle = Math.atan2(joyVector.y, joyVector.x);
           r.velocity.x = Math.cos(angle) * speed || 0;
           r.velocity.y = Math.sin(angle) * speed || 0;
@@ -510,6 +495,18 @@
 
       r.x += r.velocity.x;
       r.y += r.velocity.y;
+
+      if (isGameMode) {
+        const padding = 20;
+
+        if (r.x < padding) r.x = padding;
+        if (r.x > rocketCanvas.width - padding)
+          r.x = rocketCanvas.width - padding;
+
+        if (r.y < padding) r.y = padding;
+        if (r.y > rocketCanvas.height - padding)
+          r.y = rocketCanvas.height - padding;
+      }
 
       const targetAngle = isGameMode
         ? -Math.PI / 2
@@ -851,4 +848,3 @@ moonContainer.addEventListener("click", () => {
 
   animateExplosion();
 });
-

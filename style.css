@@ -1560,6 +1560,7 @@ input, textarea {
   inset: 0;
   pointer-events: none;
   z-index: 10001;
+  display: none;
 }
 
 body.game-mode.is-touch #mobileControls {
@@ -1569,7 +1570,8 @@ body.game-mode.is-touch #mobileControls {
 #joystickZone {
   position: absolute;
   bottom: 40px;
-  left: 40px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 120px;
   height: 120px;
   background: rgba(255, 255, 255, 0.1);
@@ -1595,27 +1597,4 @@ body.light #joystickZone {
   transform: translate(-50%, -50%);
   pointer-events: none;
   box-shadow: 0 0 15px var(--accent);
-}
-
-#fireBtn {
-  position: absolute;
-  bottom: 50px;
-  right: 40px;
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 106, 136, 0.15);
-  border: 2px solid var(--accent2);
-  border-radius: 50%;
-  color: var(--accent2);
-  font-family: var(--mono);
-  font-size: 1rem;
-  font-weight: bold;
-  pointer-events: auto;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-#fireBtn:active {
-  background: rgba(255, 106, 136, 0.4);
 }
