@@ -314,3 +314,87 @@ window.addEventListener("scroll", () => {
   
   scrollProgress.style.width = scrolled + "%";
 });
+
+// MOON EXPLOSION EFFECT
+const moonContainer = document.querySelector('.moon-container');
+const moonSvg = document.querySelector('.moon');
+let isMoonExploding = false;
+
+moonContainer.addEventListener("mouseenter", () => document.getElementById("cursorRing").classList.add("hovered"));
+moonContainer.addEventListener("mouseleave", () => document.getElementById("cursorRing").classList.remove("hovered"));
+
+moonContainer.addEventListener('click', () => {
+  if (isMoonExploding) return;
+  isMoonExploding = true;
+
+  moonSvg.style.transition = 'opacity 0.1s';
+  moonSvg.style.opacity = '0';
+
+  const mCanvas = document.createElement('canvas');
+  mCanvas.width = 300; 
+  mCanvas.height = 300;
+  mCanvas.style.position = 'absolute';
+  mCanvas.style.top = '-95px'; 
+  mCanvas.style.left = '-95px';
+  mCanvas.style.pointerEvents = 'none';
+  moonContainer.appendChild(mCanvas);
+
+  const mCtx = mCanvas.getContext('2d');
+  const particles = [];
+  const colors = ['#f0f0ff', '#d0d0e8', '#e0e0f8', '#ffffff']; 
+
+  for (let i = 0; i < 80; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 45; 
+    
+    const startX = 150 + Math.cos(angle) * radius;
+    const startY = 150 + Math.sin(angle) * radius;
+    const speed = Math.random() * 6 + 2; 
+
+    particles.push({
+      x: startX,
+      y: startY,
+      originX: startX, 
+      originY: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 3.5 + 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    });
+  }
+
+  const startTime = Date.now();
+
+  function animateExplosion() {
+    const elapsed = Date.now() - startTime;
+    mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+
+    particles.forEach(p => {
+      if (elapsed < 1400) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.93;
+        p.vy *= 0.93;
+      } else if (elapsed < 3000) {
+        const returnSpeed = 0.08;
+        p.x += (p.originX - p.x) * returnSpeed;
+        p.y += (p.originY - p.y) * returnSpeed;
+      }
+
+      mCtx.beginPath();
+      mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      mCtx.fillStyle = p.color;
+      mCtx.fill();
+    });
+
+    if (elapsed < 3000) {
+      requestAnimationFrame(animateExplosion);
+    } else {
+      mCanvas.remove();
+      moonSvg.style.opacity = '1';
+      isMoonExploding = false;
+    }
+  }
+
+  animateExplosion();
+});

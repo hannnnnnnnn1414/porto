@@ -277,10 +277,10 @@ h1 .line2 {
   position: absolute;
   top: 90px;
   right: 60px;
-  z-index: 1;
+  z-index: 10;
   width: 110px;
   height: 110px;
-  pointer-events: none;
+  pointer-events: auto;
   filter: drop-shadow(0 0 35px rgba(220, 230, 255, 0.65));
 }
 
