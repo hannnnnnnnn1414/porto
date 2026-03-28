@@ -147,39 +147,31 @@ const loaderPercent = document.getElementById("loaderPercent");
 let pct = 0;
 
 const ticker = setInterval(() => {
-  // Angka naik secara organik
   pct += Math.floor(Math.random() * 5) + 2;
 
   if (pct >= 100) {
     pct = 100;
     clearInterval(ticker);
 
-    // TIMELINE ANIMASI SINEMATIK:
-
-    // 1. Teks memudar (setelah jeda 400ms di angka 100)
     setTimeout(() => {
       loader.classList.add("hide-content");
     }, 400);
 
-    // 2. Garis tengah menjalar (setelah teks hilang)
     setTimeout(() => {
       loader.classList.add("show-line");
     }, 900);
 
-    // 3. Tirai terbuka ke atas dan bawah
     setTimeout(() => {
       loader.classList.add("open-curtain");
     }, 1400);
 
-    // 4. Sembunyikan kontainer loader sepenuhnya
     setTimeout(() => {
       loader.classList.add("hidden");
     }, 2600);
   }
 
-  // Format angka agar selalu 2 digit
   loaderPercent.textContent = pct.toString().padStart(2, "0");
-}, 100); // Sedikit dipercepat supaya angkanya ngalir lebih smooth
+}, 100); 
 
 // CURSOR
 const dot = document.getElementById("cursorDot");
