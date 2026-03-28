@@ -1541,3 +1541,15 @@ body.game-mode #scoreBoard,
 body.game-mode #exitGameBtn {
   display: block;
 }
+
+body {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input, textarea {
+  -webkit-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}

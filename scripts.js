@@ -129,8 +129,8 @@
     ctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
     ctx.fill(
       new Path2D(
-        "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z"
-      )
+        "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z",
+      ),
     );
     ctx.fillStyle = isLight ? "#e07b3a" : "#c8b6ff";
     ctx.fill(new Path2D("M-9,10 L-18,20 L-9,18 Z"));
@@ -192,7 +192,10 @@
       boss.x += boss.vx;
       boss.y += boss.vy;
 
-      if (boss.x - boss.radius < 0 || boss.x + boss.radius > rocketCanvas.width) {
+      if (
+        boss.x - boss.radius < 0 ||
+        boss.x + boss.radius > rocketCanvas.width
+      ) {
         boss.vx *= -1;
       }
       if (boss.y > 150) {
@@ -232,7 +235,12 @@
       rctx.fillStyle = "rgba(255, 255, 255, 0.3)";
       rctx.fillRect(boss.x - 50, boss.y - boss.radius - 20, 100, 8);
       rctx.fillStyle = "#6affcb";
-      rctx.fillRect(boss.x - 50, boss.y - boss.radius - 20, 100 * (boss.hp / boss.maxHp), 8);
+      rctx.fillRect(
+        boss.x - 50,
+        boss.y - boss.radius - 20,
+        100 * (boss.hp / boss.maxHp),
+        8,
+      );
 
       let dist = Math.hypot(r.x - boss.x, r.y - boss.y);
       if (dist < 12 + boss.radius) {
@@ -253,7 +261,12 @@
       rctx.lineWidth = 1.5;
       rctx.stroke();
 
-      if (bb.x < 0 || bb.x > rocketCanvas.width || bb.y < 0 || bb.y > rocketCanvas.height) {
+      if (
+        bb.x < 0 ||
+        bb.x > rocketCanvas.width ||
+        bb.y < 0 ||
+        bb.y > rocketCanvas.height
+      ) {
         bossBullets.splice(i, 1);
         continue;
       }
@@ -288,7 +301,12 @@
       rctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
       rctx.fill();
 
-      if (b.x < 0 || b.x > rocketCanvas.width || b.y < 0 || b.y > rocketCanvas.height) {
+      if (
+        b.x < 0 ||
+        b.x > rocketCanvas.width ||
+        b.y < 0 ||
+        b.y > rocketCanvas.height
+      ) {
         bullets.splice(i, 1);
         continue;
       }
@@ -349,15 +367,31 @@
       rctx.textAlign = "center";
       if (isGameWon) {
         rctx.fillStyle = "#6affcb";
-        rctx.fillText("YOU WIN!", rocketCanvas.width / 2, rocketCanvas.height / 2);
+        rctx.fillText(
+          "YOU WIN!",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2,
+        );
       } else {
         rctx.fillStyle = "#ff6a88";
-        rctx.fillText("GAME OVER", rocketCanvas.width / 2, rocketCanvas.height / 2);
+        rctx.fillText(
+          "GAME OVER",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2,
+        );
       }
       rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
       rctx.font = "20px 'Space Mono', monospace";
-      rctx.fillText("Click anywhere to Restart", rocketCanvas.width / 2, rocketCanvas.height / 2 + 40);
-      rctx.fillText("or click EXIT GAME", rocketCanvas.width / 2, rocketCanvas.height / 2 + 70);
+      rctx.fillText(
+        "Click anywhere to Restart",
+        rocketCanvas.width / 2,
+        rocketCanvas.height / 2 + 40,
+      );
+      rctx.fillText(
+        "or click EXIT GAME",
+        rocketCanvas.width / 2,
+        rocketCanvas.height / 2 + 70,
+      );
     } else {
       let dx, dy, speed;
       if (isGameMode) {
@@ -379,7 +413,9 @@
       r.x += r.velocity.x;
       r.y += r.velocity.y;
 
-      const targetAngle = isGameMode ? -Math.PI / 2 : Math.atan2(r.velocity.y, r.velocity.x);
+      const targetAngle = isGameMode
+        ? -Math.PI / 2
+        : Math.atan2(r.velocity.y, r.velocity.x);
       let diff = targetAngle - r.angle;
       while (diff < -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
@@ -485,7 +521,7 @@ const ticker = setInterval(() => {
   }
 
   loaderPercent.textContent = pct.toString().padStart(2, "0");
-}, 100); 
+}, 100);
 
 // CURSOR
 const dot = document.getElementById("cursorDot");
@@ -623,57 +659,62 @@ document.querySelectorAll(".mobile-nav-link").forEach((link) => {
 
 window.addEventListener("scroll", () => {
   const scrollProgress = document.getElementById("scrollProgress");
-  const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollTotal =
+    document.documentElement.scrollHeight - window.innerHeight;
   const scrolled = (window.scrollY / scrollTotal) * 100;
-  
+
   scrollProgress.style.width = scrolled + "%";
 });
 
 // MOON EXPLOSION EFFECT
-const moonContainer = document.querySelector('.moon-container');
-const moonSvg = document.querySelector('.moon');
+const moonContainer = document.querySelector(".moon-container");
+const moonSvg = document.querySelector(".moon");
 let isMoonExploding = false;
 
-moonContainer.addEventListener("mouseenter", () => document.getElementById("cursorRing").classList.add("hovered"));
-moonContainer.addEventListener("mouseleave", () => document.getElementById("cursorRing").classList.remove("hovered"));
+moonContainer.addEventListener("mouseenter", () =>
+  document.getElementById("cursorRing").classList.add("hovered"),
+);
+moonContainer.addEventListener("mouseleave", () =>
+  document.getElementById("cursorRing").classList.remove("hovered"),
+);
 
-moonContainer.addEventListener('click', () => {
+moonContainer.addEventListener("click", () => {
   if (isMoonExploding) return;
   isMoonExploding = true;
 
-  moonSvg.style.transition = 'opacity 0.1s';
-  moonSvg.style.opacity = '0';
+  moonSvg.style.transition = "opacity 0.1s";
+  moonSvg.style.opacity = "0";
 
-  const mCanvas = document.createElement('canvas');
-  mCanvas.width = 300; 
+  const mCanvas = document.createElement("canvas");
+  mCanvas.width = 300;
   mCanvas.height = 300;
-  mCanvas.style.position = 'absolute';
-  mCanvas.style.top = '-95px'; 
-  mCanvas.style.left = '-95px';
-  mCanvas.style.pointerEvents = 'none';
+  mCanvas.style.position = "absolute";
+  mCanvas.style.top = "-95px";
+  mCanvas.style.left = "-95px";
+  mCanvas.style.pointerEvents = "none";
   moonContainer.appendChild(mCanvas);
 
-  const mCtx = mCanvas.getContext('2d');
+  const mCtx = mCanvas.getContext("2d");
   const particles = [];
-  const colors = ['#f0f0ff', '#d0d0e8', '#e0e0f8', '#ffffff']; 
+  const colors = ["#f0f0ff", "#d0d0e8", "#e0e0f8", "#ffffff"];
 
   for (let i = 0; i < 80; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const radius = Math.random() * 45; 
-    
+    const radius = Math.random() * 45;
+
     const startX = 150 + Math.cos(angle) * radius;
     const startY = 150 + Math.sin(angle) * radius;
-    const speed = Math.random() * 6 + 2; 
+    const speed = Math.random() * 6 + 2;
 
     particles.push({
       x: startX,
       y: startY,
-      originX: startX, 
+      originX: startX,
       originY: startY,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       size: Math.random() * 3.5 + 1.5,
-      color: colors[Math.floor(Math.random() * colors.length)]
+      color: colors[Math.floor(Math.random() * colors.length)],
     });
   }
 
@@ -683,7 +724,7 @@ moonContainer.addEventListener('click', () => {
     const elapsed = Date.now() - startTime;
     mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
 
-    particles.forEach(p => {
+    particles.forEach((p) => {
       if (elapsed < 1400) {
         p.x += p.vx;
         p.y += p.vy;
@@ -705,10 +746,60 @@ moonContainer.addEventListener('click', () => {
       requestAnimationFrame(animateExplosion);
     } else {
       mCanvas.remove();
-      moonSvg.style.opacity = '1';
+      moonSvg.style.opacity = "1";
       isMoonExploding = false;
     }
   }
 
   animateExplosion();
+});
+
+// --- TOUCH EVENTS UNTUK MOBILE ---
+
+window.addEventListener(
+  "touchstart",
+  (e) => {
+    if (isGameMode && (isGameOver || isGameWon)) {
+      initGame();
+      return;
+    }
+
+    isFiring = true;
+
+    const touch = e.touches[0];
+    if (isGameMode) {
+      mouse.x = touch.clientX;
+      mouse.y = touch.clientY;
+    } else {
+      const rect = heroSection.getBoundingClientRect();
+      mouse.x = touch.clientX - rect.left;
+      mouse.y = touch.clientY - rect.top;
+    }
+  },
+  { passive: false },
+);
+
+window.addEventListener(
+  "touchmove",
+  (e) => {
+    const touch = e.touches[0];
+    if (isGameMode) {
+      mouse.x = touch.clientX;
+      mouse.y = touch.clientY;
+      e.preventDefault();
+    } else {
+      const rect = heroSection.getBoundingClientRect();
+      mouse.x = touch.clientX - rect.left;
+      mouse.y = touch.clientY - rect.top;
+    }
+  },
+  { passive: false },
+);
+
+window.addEventListener("touchend", () => {
+  isFiring = false;
+});
+
+window.addEventListener("touchcancel", () => {
+  isFiring = false;
 });
