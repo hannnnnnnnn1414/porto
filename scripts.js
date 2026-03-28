@@ -163,6 +163,87 @@
     ctx.stroke();
   }
 
+  // --- ANALOG JOYSTICK LOGIC ---
+  if (isTouchDevice) {
+    document.body.classList.add("is-touch");
+  }
+
+  const joystickZone = document.getElementById("joystickZone");
+  const joystickKnob = document.getElementById("joystickKnob");
+  const fireBtn = document.getElementById("fireBtn");
+
+  let joyActive = false;
+  let joyVector = { x: 0, y: 0 };
+  let joyCenter = { x: 0, y: 0 };
+
+  if (joystickZone) {
+    joystickZone.addEventListener("touchstart", handleJoyStart, { passive: false });
+    joystickZone.addEventListener("touchmove", handleJoyMove, { passive: false });
+    joystickZone.addEventListener("touchend", handleJoyEnd);
+    joystickZone.addEventListener("touchcancel", handleJoyEnd);
+  }
+
+  function handleJoyStart(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    joyActive = true;
+    const rect = joystickZone.getBoundingClientRect();
+    joyCenter = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+    updateJoyVector(e.touches[0]);
+  }
+
+  function handleJoyMove(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!joyActive) return;
+    updateJoyVector(e.touches[0]);
+  }
+
+  function handleJoyEnd(e) {
+    e.stopPropagation();
+    joyActive = false;
+    joyVector = { x: 0, y: 0 };
+    joystickKnob.style.transform = `translate(-50%, -50%)`;
+  }
+
+  function updateJoyVector(touch) {
+    let dx = touch.clientX - joyCenter.x;
+    let dy = touch.clientY - joyCenter.y;
+    const maxRadius = 60; 
+    let dist = Math.hypot(dx, dy);
+
+    if (dist > maxRadius) {
+      dx = (dx / dist) * maxRadius;
+      dy = (dy / dist) * maxRadius;
+    }
+
+    joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+    joyVector.x = dx / maxRadius;
+    joyVector.y = dy / maxRadius;
+  }
+
+  if (fireBtn) {
+    fireBtn.addEventListener("touchstart", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (isGameMode && (isGameOver || isGameWon)) {
+        initGame();
+        return;
+      }
+      isFiring = true;
+    }, { passive: false });
+
+    fireBtn.addEventListener("touchend", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      isFiring = false;
+    }, { passive: false });
+  }
+
   function animate() {
     rctx.clearRect(0, 0, rocketCanvas.width, rocketCanvas.height);
     const isLight = document.body.classList.contains("light");
@@ -400,12 +481,24 @@
     } else {
       let dx, dy, speed;
       if (isGameMode) {
-        dx = mouse.x - r.x;
-        dy = mouse.y - r.y;
-        let dist = Math.hypot(dx, dy);
-        speed = Math.min(dist * 0.08, 12);
-        r.velocity.x = (dx / dist) * speed || 0;
-        r.velocity.y = (dy / dist) * speed || 0;
+        if (joyActive) {
+          speed = Math.min(Math.hypot(joyVector.x, joyVector.y) * 12, 12);
+          let angle = Math.atan2(joyVector.y, joyVector.x);
+          r.velocity.x = Math.cos(angle) * speed || 0;
+          r.velocity.y = Math.sin(angle) * speed || 0;
+
+          if (speed > 0.5) {
+            mouse.x = r.x + r.velocity.x * 10;
+            mouse.y = r.y + r.velocity.y * 10;
+          }
+        } else {
+          dx = mouse.x - r.x;
+          dy = mouse.y - r.y;
+          let dist = Math.hypot(dx, dy);
+          speed = Math.min(dist * 0.08, 12);
+          r.velocity.x = (dx / dist) * speed || 0;
+          r.velocity.y = (dy / dist) * speed || 0;
+        }
       } else {
         dx = mouse.x - r.x;
         dy = mouse.y - r.y;
@@ -759,61 +852,3 @@ moonContainer.addEventListener("click", () => {
   animateExplosion();
 });
 
-// --- TOUCH EVENTS UNTUK MOBILE ---
-
-window.addEventListener(
-  "touchstart",
-  (e) => {
-    if (isGameMode && (isGameOver || isGameWon)) {
-      initGame();
-      e.preventDefault();
-      return;
-    }
-
-    isFiring = true;
-
-    const touch = e.touches[0];
-    if (isGameMode) {
-      mouse.x = touch.clientX;
-      mouse.y = touch.clientY;
-      e.preventDefault();
-    } else {
-      const rect = heroSection.getBoundingClientRect();
-      mouse.x = touch.clientX - rect.left;
-      mouse.y = touch.clientY - rect.top;
-    }
-  },
-  { passive: false },
-);
-
-window.addEventListener(
-  "touchmove",
-  (e) => {
-    const touch = e.touches[0];
-    if (isGameMode) {
-      mouse.x = touch.clientX;
-      mouse.y = touch.clientY;
-      e.preventDefault();
-    } else {
-      const rect = heroSection.getBoundingClientRect();
-      mouse.x = touch.clientX - rect.left;
-      mouse.y = touch.clientY - rect.top;
-    }
-  },
-  { passive: false },
-);
-
-window.addEventListener(
-  "touchend",
-  (e) => {
-    if (isGameMode) {
-      e.preventDefault();
-    }
-    isFiring = false;
-  },
-  { passive: false },
-);
-
-window.addEventListener("touchcancel", () => {
-  isFiring = false;
-});
