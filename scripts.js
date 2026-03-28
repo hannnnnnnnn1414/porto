@@ -1,4 +1,4 @@
-//ROCKET
+// ROCKET
 (function () {
   const rocketCanvas = document.createElement("canvas");
   rocketCanvas.style.cssText =
@@ -6,25 +6,110 @@
   const heroSection = document.getElementById("hero");
   heroSection.prepend(rocketCanvas);
   const rctx = rocketCanvas.getContext("2d");
+
+  const scoreBoard = document.createElement("div");
+  scoreBoard.id = "scoreBoard";
+  document.body.appendChild(scoreBoard);
+
+  const exitBtn = document.createElement("button");
+  exitBtn.id = "exitGameBtn";
+  exitBtn.textContent = "EXIT GAME";
+  document.body.appendChild(exitBtn);
+
+  let isGameMode = false;
+  let score = 0;
+  let enemies = [];
+  let bossBullets = [];
+  let isGameOver = false;
+  let isGameWon = false;
+  let boss = null;
+
+  function initGame() {
+    document.body.classList.add("game-mode");
+    isGameMode = true;
+    score = 0;
+    enemies = [];
+    bossBullets = [];
+    isGameOver = false;
+    isGameWon = false;
+    boss = null;
+    scoreBoard.textContent = "SCORE: 0";
+    rocketCanvas.style.position = "fixed";
+    rocketCanvas.style.pointerEvents = "auto";
+    r.x = window.innerWidth / 2;
+    r.y = window.innerHeight - 100;
+    resize();
+  }
+
+  function exitGame() {
+    document.body.classList.remove("game-mode");
+    isGameMode = false;
+    isGameOver = false;
+    isGameWon = false;
+    boss = null;
+    enemies = [];
+    bossBullets = [];
+    rocketCanvas.style.position = "absolute";
+    rocketCanvas.style.pointerEvents = "none";
+    r.x = heroSection.offsetWidth * 0.72;
+    r.y = heroSection.offsetHeight * 0.38;
+    r.angle = -Math.PI / 2;
+    resize();
+  }
+
+  const playBtn = document.getElementById("playBtn");
+  if (playBtn) playBtn.addEventListener("click", initGame);
+  exitBtn.addEventListener("click", exitGame);
+
   function resize() {
-    rocketCanvas.width = heroSection.offsetWidth;
-    rocketCanvas.height = heroSection.offsetHeight;
+    if (isGameMode) {
+      rocketCanvas.width = window.innerWidth;
+      rocketCanvas.height = window.innerHeight;
+    } else {
+      rocketCanvas.width = heroSection.offsetWidth;
+      rocketCanvas.height = heroSection.offsetHeight;
+    }
   }
   window.addEventListener("resize", resize);
   resize();
+
   let mouse = {
-    x: heroSection.offsetWidth * 0.7,
-    y: heroSection.offsetHeight * 0.4,
+    x: window.innerWidth * 0.5,
+    y: window.innerHeight * 0.8,
   };
-  heroSection.addEventListener("mousemove", (e) => {
-    const rect = heroSection.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
+
+  window.addEventListener("mousemove", (e) => {
+    if (isGameMode) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    } else {
+      const rect = heroSection.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    }
   });
+
   heroSection.addEventListener("mouseleave", () => {
-    mouse.x = heroSection.offsetWidth * 0.7;
-    mouse.y = heroSection.offsetHeight * 0.4;
+    if (!isGameMode) {
+      mouse.x = heroSection.offsetWidth * 0.7;
+      mouse.y = heroSection.offsetHeight * 0.4;
+      isFiring = false;
+    }
   });
+
+  let bullets = [];
+  let isFiring = false;
+  let fireCooldown = 0;
+
+  window.addEventListener("mousedown", () => {
+    if (isGameMode && (isGameOver || isGameWon)) {
+      initGame();
+      return;
+    }
+    isFiring = true;
+  });
+  window.addEventListener("mouseup", () => (isFiring = false));
+
   let r = {
     x: heroSection.offsetWidth * 0.72,
     y: heroSection.offsetHeight * 0.38,
@@ -33,6 +118,7 @@
     scale: 0.45,
     trail: [],
   };
+
   function drawRocket(ctx, x, y, angle, scale) {
     const isLight = document.body.classList.contains("light");
     ctx.save();
@@ -43,8 +129,8 @@
     ctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
     ctx.fill(
       new Path2D(
-        "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z",
-      ),
+        "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z"
+      )
     );
     ctx.fillStyle = isLight ? "#e07b3a" : "#c8b6ff";
     ctx.fill(new Path2D("M-9,10 L-18,20 L-9,18 Z"));
@@ -59,34 +145,262 @@
     ctx.fill();
     ctx.restore();
   }
+
+  function drawEnemy(ctx, x, y, radius) {
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      let angle = (Math.PI / 4) * i;
+      let r2 = i % 2 === 0 ? radius : radius * 0.5;
+      ctx.lineTo(x + Math.cos(angle) * r2, y + Math.sin(angle) * r2);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "#ff6a88";
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
   function animate() {
     rctx.clearRect(0, 0, rocketCanvas.width, rocketCanvas.height);
     const isLight = document.body.classList.contains("light");
-    const dx = mouse.x - r.x,
-      dy = mouse.y - r.y,
-      dist = Math.hypot(dx, dy),
-      speed = Math.min(dist * 0.002, 0.08);
-    r.velocity.x = dx * speed;
-    r.velocity.y = dy * speed;
-    r.x += r.velocity.x;
-    r.y += r.velocity.y;
-    const targetAngle = Math.atan2(r.velocity.y, r.velocity.x);
-    let diff = targetAngle - r.angle;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    r.angle += diff * 0.1;
-    r.trail.push({ x: r.x, y: r.y });
-    if (r.trail.length > 20) r.trail.shift();
-    for (let i = 0; i < r.trail.length; i++) {
-      const t = r.trail[i],
-        ratio = i / r.trail.length;
-      rctx.globalAlpha = ratio * 0.25;
-      rctx.fillStyle = isLight ? `rgba(245,166,35,1)` : `rgba(165,180,252,1)`;
-      rctx.beginPath();
-      rctx.arc(t.x, t.y, 3 * ratio, 0, Math.PI * 2);
-      rctx.fill();
+
+    if (isGameMode && !isGameOver && !isGameWon) {
+      if (score >= 200 && !boss) {
+        boss = {
+          x: rocketCanvas.width / 2,
+          y: -100,
+          radius: 45,
+          hp: 200,
+          maxHp: 200,
+          vx: 4,
+          vy: 1,
+        };
+      }
+
+      if (!boss && Math.random() < 0.04) {
+        enemies.push({
+          x: Math.random() * rocketCanvas.width,
+          y: -30,
+          radius: 12 + Math.random() * 15,
+          speed: 2 + Math.random() * 4,
+        });
+      }
     }
-    drawRocket(rctx, r.x, r.y, r.angle, r.scale);
+
+    if (boss && !isGameOver && !isGameWon) {
+      boss.x += boss.vx;
+      boss.y += boss.vy;
+
+      if (boss.x - boss.radius < 0 || boss.x + boss.radius > rocketCanvas.width) {
+        boss.vx *= -1;
+      }
+      if (boss.y > 150) {
+        boss.vy = 0;
+      }
+
+      if (Math.random() < 0.03) {
+        let angle = Math.atan2(r.y - boss.y, r.x - boss.x);
+        bossBullets.push({
+          x: boss.x,
+          y: boss.y,
+          vx: Math.cos(angle) * 7,
+          vy: Math.sin(angle) * 7,
+        });
+      }
+
+      rctx.save();
+      rctx.translate(boss.x, boss.y);
+      rctx.beginPath();
+      rctx.moveTo(0, boss.radius);
+      rctx.lineTo(-boss.radius, 0);
+      rctx.lineTo(-boss.radius * 0.5, -boss.radius);
+      rctx.lineTo(boss.radius * 0.5, -boss.radius);
+      rctx.lineTo(boss.radius, 0);
+      rctx.closePath();
+      rctx.fillStyle = "#ff3366";
+      rctx.fill();
+      rctx.strokeStyle = "#ffffff";
+      rctx.lineWidth = 3;
+      rctx.stroke();
+      rctx.beginPath();
+      rctx.arc(0, 0, boss.radius * 0.3, 0, Math.PI * 2);
+      rctx.fillStyle = "#1a1208";
+      rctx.fill();
+      rctx.restore();
+
+      rctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+      rctx.fillRect(boss.x - 50, boss.y - boss.radius - 20, 100, 8);
+      rctx.fillStyle = "#6affcb";
+      rctx.fillRect(boss.x - 50, boss.y - boss.radius - 20, 100 * (boss.hp / boss.maxHp), 8);
+
+      let dist = Math.hypot(r.x - boss.x, r.y - boss.y);
+      if (dist < 12 + boss.radius) {
+        isGameOver = true;
+      }
+    }
+
+    for (let i = bossBullets.length - 1; i >= 0; i--) {
+      let bb = bossBullets[i];
+      bb.x += bb.vx;
+      bb.y += bb.vy;
+
+      rctx.beginPath();
+      rctx.arc(bb.x, bb.y, 5, 0, Math.PI * 2);
+      rctx.fillStyle = "#ff3366";
+      rctx.fill();
+      rctx.strokeStyle = "#ffffff";
+      rctx.lineWidth = 1.5;
+      rctx.stroke();
+
+      if (bb.x < 0 || bb.x > rocketCanvas.width || bb.y < 0 || bb.y > rocketCanvas.height) {
+        bossBullets.splice(i, 1);
+        continue;
+      }
+
+      let dist = Math.hypot(bb.x - r.x, bb.y - r.y);
+      if (dist < 12 + 5) {
+        isGameOver = true;
+      }
+    }
+
+    if (isFiring && fireCooldown <= 0 && !isGameOver && !isGameWon) {
+      const bulletSpeed = 12;
+      const offsetX = Math.cos(r.angle) * 15;
+      const offsetY = Math.sin(r.angle) * 15;
+      bullets.push({
+        x: r.x + offsetX,
+        y: r.y + offsetY,
+        vx: Math.cos(r.angle) * bulletSpeed,
+        vy: Math.sin(r.angle) * bulletSpeed,
+      });
+      fireCooldown = 6;
+    }
+    if (fireCooldown > 0) fireCooldown--;
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      let b = bullets[i];
+      b.x += b.vx;
+      b.y += b.vy;
+
+      rctx.beginPath();
+      rctx.arc(b.x, b.y, 2.5, 0, Math.PI * 2);
+      rctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
+      rctx.fill();
+
+      if (b.x < 0 || b.x > rocketCanvas.width || b.y < 0 || b.y > rocketCanvas.height) {
+        bullets.splice(i, 1);
+        continue;
+      }
+
+      let hit = false;
+
+      if (boss && !isGameOver && !isGameWon) {
+        let dist = Math.hypot(b.x - boss.x, b.y - boss.y);
+        if (dist < 2.5 + boss.radius) {
+          boss.hp -= 5;
+          bullets.splice(i, 1);
+          hit = true;
+          if (boss.hp <= 0) {
+            boss = null;
+            isGameWon = true;
+            score += 500;
+            scoreBoard.textContent = "SCORE: " + score;
+          }
+          continue;
+        }
+      }
+
+      if (isGameMode && !isGameOver && !isGameWon && !hit) {
+        for (let j = enemies.length - 1; j >= 0; j--) {
+          let e = enemies[j];
+          let dist = Math.hypot(b.x - e.x, b.y - e.y);
+          if (dist < 2.5 + e.radius) {
+            enemies.splice(j, 1);
+            bullets.splice(i, 1);
+            score += 10;
+            scoreBoard.textContent = "SCORE: " + score;
+            break;
+          }
+        }
+      }
+    }
+
+    if (isGameMode && !isGameOver && !isGameWon) {
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+        e.y += e.speed;
+        drawEnemy(rctx, e.x, e.y, e.radius);
+
+        if (e.y > rocketCanvas.height + e.radius) {
+          enemies.splice(i, 1);
+        }
+
+        let dist = Math.hypot(r.x - e.x, r.y - e.y);
+        if (dist < 12 + e.radius) {
+          isGameOver = true;
+        }
+      }
+    }
+
+    if (isGameOver || isGameWon) {
+      rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
+      rctx.font = "bold 40px 'Space Mono', monospace";
+      rctx.textAlign = "center";
+      if (isGameWon) {
+        rctx.fillStyle = "#6affcb";
+        rctx.fillText("YOU WIN!", rocketCanvas.width / 2, rocketCanvas.height / 2);
+      } else {
+        rctx.fillStyle = "#ff6a88";
+        rctx.fillText("GAME OVER", rocketCanvas.width / 2, rocketCanvas.height / 2);
+      }
+      rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
+      rctx.font = "20px 'Space Mono', monospace";
+      rctx.fillText("Click anywhere to Restart", rocketCanvas.width / 2, rocketCanvas.height / 2 + 40);
+      rctx.fillText("or click EXIT GAME", rocketCanvas.width / 2, rocketCanvas.height / 2 + 70);
+    } else {
+      let dx, dy, speed;
+      if (isGameMode) {
+        dx = mouse.x - r.x;
+        dy = mouse.y - r.y;
+        let dist = Math.hypot(dx, dy);
+        speed = Math.min(dist * 0.08, 12);
+        r.velocity.x = (dx / dist) * speed || 0;
+        r.velocity.y = (dy / dist) * speed || 0;
+      } else {
+        dx = mouse.x - r.x;
+        dy = mouse.y - r.y;
+        let dist = Math.hypot(dx, dy);
+        speed = Math.min(dist * 0.002, 0.08);
+        r.velocity.x = dx * speed;
+        r.velocity.y = dy * speed;
+      }
+
+      r.x += r.velocity.x;
+      r.y += r.velocity.y;
+
+      const targetAngle = isGameMode ? -Math.PI / 2 : Math.atan2(r.velocity.y, r.velocity.x);
+      let diff = targetAngle - r.angle;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      r.angle += diff * (isGameMode ? 0.3 : 0.1);
+    }
+
+    if (!isGameOver && !isGameWon) {
+      r.trail.push({ x: r.x, y: r.y });
+      if (r.trail.length > 20) r.trail.shift();
+      for (let i = 0; i < r.trail.length; i++) {
+        const t = r.trail[i],
+          ratio = i / r.trail.length;
+        rctx.globalAlpha = ratio * 0.25;
+        rctx.fillStyle = isLight ? `rgba(245,166,35,1)` : `rgba(165,180,252,1)`;
+        rctx.beginPath();
+        rctx.arc(t.x, t.y, 3 * ratio, 0, Math.PI * 2);
+        rctx.fill();
+      }
+      drawRocket(rctx, r.x, r.y, r.angle, r.scale);
+    }
+
     requestAnimationFrame(animate);
   }
   new ResizeObserver(resize).observe(heroSection);
