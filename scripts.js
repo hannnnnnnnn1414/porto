@@ -149,18 +149,149 @@
   }
 
   function drawEnemy(ctx, x, y, radius) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // --- 1. Efek Glow/Cahaya Inti (Outer Glow untuk Mata Bulan Sabit) ---
+    // Agar efek energinya tetap terasa, gua pake glow di sekitar inti mata.
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#ffc640"; // Glow warna kuning-oranye inti
+
+    // --- 2. Inti Mata Bulan Sabit di Tengah ---
     ctx.beginPath();
-    for (let i = 0; i < 8; i++) {
-      let angle = (Math.PI / 4) * i;
-      let r2 = i % 2 === 0 ? radius : radius * 0.5;
-      ctx.lineTo(x + Math.cos(angle) * r2, y + Math.sin(angle) * r2);
-    }
+    ctx.arc(0, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffc640"; // Kuning bercahaya
+    ctx.fill();
+
+    // Bulan sabit gelap di tengah inti bercahaya
+    ctx.beginPath();
+    ctx.arc(-radius * 0.05, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = "#1a1208"; // Warna bodi gelap
+    ctx.fill();
+
+    // Reset shadow agar tidak mempengaruhi bodi
+    ctx.shadowBlur = 0;
+
+    // --- 3. Bodi Pusat Logam Gelap dan Mahkota ---
+    // Bentuk bodi memanjang ke bawah dengan paku di atas.
+    ctx.beginPath();
+    // Bodi utama
+    ctx.moveTo(0, radius); // Ujung bawah bodi
+    ctx.lineTo(radius * 0.6, -radius * 0.6); // Samping kanan bodi
+    ctx.lineTo(-radius * 0.6, -radius * 0.6); // Samping kiri bodi
     ctx.closePath();
-    ctx.fillStyle = "#ff6a88";
+    ctx.fillStyle = "#1a1208"; // Warna logam gelap
+    ctx.fill();
+
+    // Mahkota runcing di atas
+    ctx.beginPath();
+    ctx.moveTo(-radius * 0.4, -radius * 0.8);
+    ctx.lineTo(-radius * 0.2, -radius * 1.1);
+    ctx.lineTo(0, -radius * 0.9);
+    ctx.lineTo(radius * 0.2, -radius * 1.1);
+    ctx.lineTo(radius * 0.4, -radius * 0.8);
+    ctx.closePath();
+    ctx.fillStyle = "#1a1208";
+    ctx.fill();
+
+    // Stroke bodi
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // --- 4. Sayap Sabit Besar yang Bergerigi ---
+    // Dua sayap sabit besar di samping, dengan gergaji tajam di bagian bawah.
+
+    // Sayap Kanan
+    ctx.beginPath();
+    ctx.moveTo(radius * 0.6, -radius * 0.2); // Mulai dari samping bodi
+    ctx.bezierCurveTo(
+      radius * 1.5,
+      -radius * 0.5,
+      radius * 1.3,
+      radius,
+      radius * 0.8,
+      radius,
+    ); // Kurva sabit
+    // Gergaji tajam
+    ctx.lineTo(radius * 0.7, radius * 0.8);
+    ctx.lineTo(radius * 0.9, radius * 0.8);
+    ctx.lineTo(radius * 0.8, radius * 0.6);
+    ctx.lineTo(radius * 1.0, radius * 0.6);
+    ctx.lineTo(radius * 0.9, radius * 0.4);
+    ctx.lineTo(radius * 1.1, radius * 0.4);
+    ctx.lineTo(radius * 1.0, radius * 0.2);
+    ctx.lineTo(radius * 1.2, radius * 0.2);
+    ctx.lineTo(radius * 0.6, -radius * 0.2);
+    ctx.closePath();
+    ctx.fillStyle = "#1a1208";
     ctx.fill();
     ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
+
+    // Sayap Kiri (Simetris)
+    ctx.beginPath();
+    ctx.moveTo(-radius * 0.6, -radius * 0.2);
+    ctx.bezierCurveTo(
+      -radius * 1.5,
+      -radius * 0.5,
+      -radius * 1.3,
+      radius,
+      -radius * 0.8,
+      radius,
+    );
+    // Gergaji tajam
+    ctx.lineTo(-radius * 0.7, radius * 0.8);
+    ctx.lineTo(-radius * 0.9, radius * 0.8);
+    ctx.lineTo(-radius * 0.8, radius * 0.6);
+    ctx.lineTo(-radius * 1.0, radius * 0.6);
+    ctx.lineTo(-radius * 0.9, radius * 0.4);
+    ctx.lineTo(-radius * 1.1, radius * 0.4);
+    ctx.lineTo(-radius * 1.0, radius * 0.2);
+    ctx.lineTo(-radius * 1.2, radius * 0.2);
+    ctx.lineTo(-radius * 0.6, -radius * 0.2);
+    ctx.closePath();
+    ctx.fillStyle = "#1a1208";
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // --- 5. Garis Aksen Merah pada Panel Sayap ---
+    // Garis merah tebal yang mengikuti tepi panel utama sabit.
+
+    // Sayap Kanan
+    ctx.beginPath();
+    ctx.moveTo(radius * 0.8, -radius * 0.1);
+    ctx.bezierCurveTo(
+      radius * 1.2,
+      -radius * 0.3,
+      radius * 1.1,
+      radius * 0.6,
+      radius * 0.9,
+      radius * 0.6,
+    );
+    ctx.strokeStyle = "#ff3366"; // Merah aksen tebal
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Sayap Kiri
+    ctx.beginPath();
+    ctx.moveTo(-radius * 0.8, -radius * 0.1);
+    ctx.bezierCurveTo(
+      -radius * 1.2,
+      -radius * 0.3,
+      -radius * 1.1,
+      radius * 0.6,
+      -radius * 0.9,
+      radius * 0.6,
+    );
+    ctx.strokeStyle = "#ff3366";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   // --- ANALOG JOYSTICK LOGIC ---
@@ -237,12 +368,16 @@
       if (score >= 200 && !boss) {
         boss = {
           x: rocketCanvas.width / 2,
-          y: -100,
-          radius: 45,
-          hp: 200,
-          maxHp: 200,
-          vx: 4,
-          vy: 1,
+          y: -150,
+          radius: 80,
+          hp: 800,
+          maxHp: 800,
+          vx: 3,
+          vy: 1.5,
+          attackTimer: 0,
+          laserActive: false,
+          laserDuration: 0,
+          laserWarnTimer: 0,
         };
       }
 
@@ -257,61 +392,160 @@
     }
 
     if (boss && !isGameOver && !isGameWon) {
-      boss.x += boss.vx;
-      boss.y += boss.vy;
+      // --- 1. Logika Pergerakan ---
+      if (boss.y < 150) {
+        boss.y += boss.vy; // Turun ke tengah layar
+      } else {
+        boss.x += boss.vx; // Mondar-mandir kiri kanan
+        if (
+          boss.x - boss.radius < 0 ||
+          boss.x + boss.radius > rocketCanvas.width
+        ) {
+          boss.vx *= -1;
+        }
+      }
 
+      // --- 2. Timer Pola Serangan ---
+      boss.attackTimer++;
+
+      // --- 3. Serangan Peluru Nyebar (Spread) ---
+      // Nembak 5 peluru sekaligus tiap 50 frame, asal lagi gak keluarin laser
       if (
-        boss.x - boss.radius < 0 ||
-        boss.x + boss.radius > rocketCanvas.width
+        boss.attackTimer % 50 === 0 &&
+        !boss.laserActive &&
+        boss.laserWarnTimer <= 0
       ) {
-        boss.vx *= -1;
-      }
-      if (boss.y > 150) {
-        boss.vy = 0;
-      }
-
-      if (Math.random() < 0.03) {
-        let angle = Math.atan2(r.y - boss.y, r.x - boss.x);
-        bossBullets.push({
-          x: boss.x,
-          y: boss.y,
-          vx: Math.cos(angle) * 7,
-          vy: Math.sin(angle) * 7,
-        });
+        let baseAngle = Math.atan2(r.y - boss.y, r.x - boss.x);
+        for (let i = -2; i <= 2; i++) {
+          let angle = baseAngle + i * 0.25; // Jarak antar peluru
+          bossBullets.push({
+            x: boss.x,
+            y: boss.y + boss.radius * 0.5,
+            vx: Math.cos(angle) * 6,
+            vy: Math.sin(angle) * 6,
+          });
+        }
       }
 
+      // --- 4. Serangan Laser Raksasa ---
+      if (boss.attackTimer === 150) {
+        boss.laserWarnTimer = 40; // Kasih warning 40 frame sebelum nembak
+        boss.vx = 0; // Boss berhenti gerak pas mau laser
+      }
+
+      if (boss.laserWarnTimer > 0) {
+        boss.laserWarnTimer--;
+        if (boss.laserWarnTimer === 0) {
+          boss.laserActive = true;
+          boss.laserDuration = 50; // Laser nyala selama 50 frame
+        }
+      }
+
+      if (boss.laserActive) {
+        boss.laserDuration--;
+        if (boss.laserDuration <= 0) {
+          boss.laserActive = false;
+          boss.attackTimer = 0; // Reset siklus serangan
+          boss.vx = Math.random() > 0.5 ? 3 : -3; // Mulai gerak lagi
+        }
+      }
+
+      // --- 5. Visual Boss (Desain Alien Dreadnought) ---
       rctx.save();
       rctx.translate(boss.x, boss.y);
+
+      // Bodi utama
       rctx.beginPath();
       rctx.moveTo(0, boss.radius);
-      rctx.lineTo(-boss.radius, 0);
-      rctx.lineTo(-boss.radius * 0.5, -boss.radius);
-      rctx.lineTo(boss.radius * 0.5, -boss.radius);
       rctx.lineTo(boss.radius, 0);
+      rctx.lineTo(boss.radius * 0.6, -boss.radius * 0.8);
+      rctx.lineTo(-boss.radius * 0.6, -boss.radius * 0.8);
+      rctx.lineTo(-boss.radius, 0);
       rctx.closePath();
-      rctx.fillStyle = "#ff3366";
-      rctx.fill();
-      rctx.strokeStyle = "#ffffff";
-      rctx.lineWidth = 3;
-      rctx.stroke();
-      rctx.beginPath();
-      rctx.arc(0, 0, boss.radius * 0.3, 0, Math.PI * 2);
       rctx.fillStyle = "#1a1208";
       rctx.fill();
+      rctx.strokeStyle = "#ff3366";
+      rctx.lineWidth = 3;
+      rctx.stroke();
+
+      // Garis detail armor
+      rctx.beginPath();
+      rctx.moveTo(0, boss.radius);
+      rctx.lineTo(0, -boss.radius * 0.8);
+      rctx.moveTo(-boss.radius * 0.5, -boss.radius * 0.2);
+      rctx.lineTo(boss.radius * 0.5, -boss.radius * 0.2);
+      rctx.strokeStyle = "rgba(255, 51, 102, 0.5)";
+      rctx.stroke();
+
+      // Power Core di tengah (Warna berubah jadi cyan kalau mau nembak laser)
+      rctx.beginPath();
+      rctx.arc(0, -boss.radius * 0.1, boss.radius * 0.35, 0, Math.PI * 2);
+      rctx.fillStyle =
+        boss.laserWarnTimer > 0 || boss.laserActive ? "#6affcb" : "#ff3366";
+      rctx.fill();
+
+      rctx.beginPath();
+      rctx.arc(0, -boss.radius * 0.1, boss.radius * 0.15, 0, Math.PI * 2);
+      rctx.fillStyle = "#ffffff";
+      rctx.fill();
+
+      // Meriam energi di sayap
+      rctx.fillStyle = "#6affcb";
+      rctx.fillRect(-boss.radius * 0.8, -10, 8, 20);
+      rctx.fillRect(boss.radius * 0.8 - 8, -10, 8, 20);
       rctx.restore();
 
+      // --- 6. Visual Laser & Hitbox Laser ---
+      if (boss.laserWarnTimer > 0) {
+        // Garis putus-putus merah buat ngasih warning ke player
+        rctx.beginPath();
+        rctx.moveTo(boss.x, boss.y + boss.radius);
+        rctx.lineTo(boss.x, rocketCanvas.height);
+        rctx.strokeStyle = "rgba(255, 51, 102, 0.4)";
+        rctx.lineWidth = 2;
+        rctx.setLineDash([15, 15]);
+        rctx.stroke();
+        rctx.setLineDash([]);
+      }
+
+      if (boss.laserActive) {
+        // Gambar Giant Laser Cyan
+        let laserWidth = 50 + Math.random() * 15; // Efek laser bergetar
+        rctx.fillStyle = "rgba(106, 255, 203, 0.9)";
+        rctx.shadowBlur = 20;
+        rctx.shadowColor = "#6affcb";
+        rctx.fillRect(
+          boss.x - laserWidth / 2,
+          boss.y + boss.radius * 0.5,
+          laserWidth,
+          rocketCanvas.height,
+        );
+        rctx.shadowBlur = 0;
+
+        // Deteksi Tabrakan Laser dengan Player
+        if (
+          r.x > boss.x - laserWidth / 2 - 12 &&
+          r.x < boss.x + laserWidth / 2 + 12 &&
+          r.y > boss.y
+        ) {
+          isGameOver = true;
+        }
+      }
+
+      // --- 7. HP Bar & Deteksi Tabrakan Fisik Boss ---
       rctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-      rctx.fillRect(boss.x - 50, boss.y - boss.radius - 20, 100, 8);
+      rctx.fillRect(boss.x - 75, boss.y - boss.radius - 25, 150, 8);
       rctx.fillStyle = "#6affcb";
       rctx.fillRect(
-        boss.x - 50,
-        boss.y - boss.radius - 20,
-        100 * (boss.hp / boss.maxHp),
+        boss.x - 75,
+        boss.y - boss.radius - 25,
+        150 * (boss.hp / boss.maxHp),
         8,
       );
 
+      // Kalau player nabrak bodi boss
       let dist = Math.hypot(r.x - boss.x, r.y - boss.y);
-      if (dist < 12 + boss.radius) {
+      if (dist < 12 + boss.radius * 0.8) {
         isGameOver = true;
       }
     }
@@ -761,90 +995,88 @@ window.addEventListener("scroll", () => {
   scrollProgress.style.width = scrolled + "%";
 });
 
-// MOON EXPLOSION EFFECT
 const moonContainer = document.querySelector(".moon-container");
 const moonSvg = document.querySelector(".moon");
+const playBtn = document.getElementById("playBtn");
 let isMoonExploding = false;
 
-moonContainer.addEventListener("mouseenter", () =>
-  document.getElementById("cursorRing").classList.add("hovered"),
-);
-moonContainer.addEventListener("mouseleave", () =>
-  document.getElementById("cursorRing").classList.remove("hovered"),
-);
+if (moonContainer && moonSvg) {
+  moonContainer.addEventListener("click", (e) => {
+    if (e.target.id === "playBtn") return;
 
-moonContainer.addEventListener("click", () => {
-  if (isMoonExploding) return;
-  isMoonExploding = true;
+    if (isMoonExploding) return;
+    isMoonExploding = true;
 
-  moonSvg.style.transition = "opacity 0.1s";
-  moonSvg.style.opacity = "0";
+    moonContainer.classList.add("exploded");
 
-  const mCanvas = document.createElement("canvas");
-  mCanvas.width = 300;
-  mCanvas.height = 300;
-  mCanvas.style.position = "absolute";
-  mCanvas.style.top = "-95px";
-  mCanvas.style.left = "-95px";
-  mCanvas.style.pointerEvents = "none";
-  moonContainer.appendChild(mCanvas);
+    moonSvg.style.transition = "opacity 0.1s";
+    moonSvg.style.opacity = "0";
 
-  const mCtx = mCanvas.getContext("2d");
-  const particles = [];
-  const colors = ["#f0f0ff", "#d0d0e8", "#e0e0f8", "#ffffff"];
+    const mCanvas = document.createElement("canvas");
+    mCanvas.width = 300;
+    mCanvas.height = 300;
+    mCanvas.style.position = "absolute";
+    mCanvas.style.top = "-95px";
+    mCanvas.style.left = "-95px";
+    mCanvas.style.pointerEvents = "none";
+    moonContainer.appendChild(mCanvas);
 
-  for (let i = 0; i < 80; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = Math.random() * 45;
+    const mCtx = mCanvas.getContext("2d");
+    const particles = [];
+    const colors = ["#f0f0ff", "#d0d0e8", "#e0e0f8", "#ffffff"];
 
-    const startX = 150 + Math.cos(angle) * radius;
-    const startY = 150 + Math.sin(angle) * radius;
-    const speed = Math.random() * 6 + 2;
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 45;
+      const startX = 150 + Math.cos(angle) * radius;
+      const startY = 150 + Math.sin(angle) * radius;
+      const speed = Math.random() * 6 + 2;
 
-    particles.push({
-      x: startX,
-      y: startY,
-      originX: startX,
-      originY: startY,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      size: Math.random() * 3.5 + 1.5,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    });
-  }
-
-  const startTime = Date.now();
-
-  function animateExplosion() {
-    const elapsed = Date.now() - startTime;
-    mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-
-    particles.forEach((p) => {
-      if (elapsed < 1400) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx *= 0.93;
-        p.vy *= 0.93;
-      } else if (elapsed < 3000) {
-        const returnSpeed = 0.08;
-        p.x += (p.originX - p.x) * returnSpeed;
-        p.y += (p.originY - p.y) * returnSpeed;
-      }
-
-      mCtx.beginPath();
-      mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      mCtx.fillStyle = p.color;
-      mCtx.fill();
-    });
-
-    if (elapsed < 3000) {
-      requestAnimationFrame(animateExplosion);
-    } else {
-      mCanvas.remove();
-      moonSvg.style.opacity = "1";
-      isMoonExploding = false;
+      particles.push({
+        x: startX,
+        y: startY,
+        originX: startX,
+        originY: startY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 3.5 + 1.5,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
     }
-  }
 
-  animateExplosion();
-});
+    const startTime = Date.now();
+
+    function animateExplosion() {
+      const elapsed = Date.now() - startTime;
+      mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+
+      particles.forEach((p) => {
+        if (elapsed < 1400) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.93;
+          p.vy *= 0.93;
+        } else if (elapsed < 3000) {
+          const returnSpeed = 0.08;
+          p.x += (p.originX - p.x) * returnSpeed;
+          p.y += (p.originY - p.y) * returnSpeed;
+        }
+
+        mCtx.beginPath();
+        mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        mCtx.fillStyle = p.color;
+        mCtx.fill();
+      });
+
+      if (elapsed < 3000) {
+        requestAnimationFrame(animateExplosion);
+      } else {
+        mCanvas.remove();
+        moonSvg.style.opacity = "1";
+        isMoonExploding = false;
+        moonContainer.classList.remove("exploded");
+      }
+    }
+    animateExplosion();
+  });
+}
