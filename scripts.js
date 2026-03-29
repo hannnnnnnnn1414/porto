@@ -19,10 +19,138 @@
   let isGameMode = false;
   let score = 0;
   let enemies = [];
+  let particles = [];
+  let enemyBullets = [];
   let bossBullets = [];
   let isGameOver = false;
   let isGameWon = false;
   let boss = null;
+
+  function createEnemyCache(radius) {
+    const cacheCanvas = document.createElement("canvas");
+    const padding = 40;
+    cacheCanvas.width = radius * 3 + padding;
+    cacheCanvas.height = radius * 3 + padding;
+    const ctxCache = cacheCanvas.getContext("2d");
+
+    ctxCache.translate(cacheCanvas.width / 2, cacheCanvas.height / 2);
+
+    ctxCache.shadowBlur = 10;
+    ctxCache.shadowColor = "#ffc640";
+
+    ctxCache.beginPath();
+    ctxCache.arc(0, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
+    ctxCache.fillStyle = "#ffc640";
+    ctxCache.fill();
+
+    ctxCache.beginPath();
+    ctxCache.arc(-radius * 0.05, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
+    ctxCache.fillStyle = "#1a1208";
+    ctxCache.fill();
+
+    ctxCache.shadowBlur = 0;
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(0, radius);
+    ctxCache.lineTo(radius * 0.6, -radius * 0.6);
+    ctxCache.lineTo(-radius * 0.6, -radius * 0.6);
+    ctxCache.closePath();
+    ctxCache.fillStyle = "#1a1208";
+    ctxCache.fill();
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(-radius * 0.4, -radius * 0.8);
+    ctxCache.lineTo(-radius * 0.2, -radius * 1.1);
+    ctxCache.lineTo(0, -radius * 0.9);
+    ctxCache.lineTo(radius * 0.2, -radius * 1.1);
+    ctxCache.lineTo(radius * 0.4, -radius * 0.8);
+    ctxCache.closePath();
+    ctxCache.fillStyle = "#1a1208";
+    ctxCache.fill();
+    ctxCache.strokeStyle = "#ffffff";
+    ctxCache.lineWidth = 1.5;
+    ctxCache.stroke();
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(radius * 0.6, -radius * 0.2);
+    ctxCache.bezierCurveTo(
+      radius * 1.5,
+      -radius * 0.5,
+      radius * 1.3,
+      radius,
+      radius * 0.8,
+      radius,
+    );
+    ctxCache.lineTo(radius * 0.7, radius * 0.8);
+    ctxCache.lineTo(radius * 0.9, radius * 0.8);
+    ctxCache.lineTo(radius * 0.8, radius * 0.6);
+    ctxCache.lineTo(radius * 1.0, radius * 0.6);
+    ctxCache.lineTo(radius * 0.9, radius * 0.4);
+    ctxCache.lineTo(radius * 1.1, radius * 0.4);
+    ctxCache.lineTo(radius * 1.0, radius * 0.2);
+    ctxCache.lineTo(radius * 1.2, radius * 0.2);
+    ctxCache.lineTo(radius * 0.6, -radius * 0.2);
+    ctxCache.closePath();
+    ctxCache.fillStyle = "#1a1208";
+    ctxCache.fill();
+    ctxCache.stroke();
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(-radius * 0.6, -radius * 0.2);
+    ctxCache.bezierCurveTo(
+      -radius * 1.5,
+      -radius * 0.5,
+      -radius * 1.3,
+      radius,
+      -radius * 0.8,
+      radius,
+    );
+    ctxCache.lineTo(-radius * 0.7, radius * 0.8);
+    ctxCache.lineTo(-radius * 0.9, radius * 0.8);
+    ctxCache.lineTo(-radius * 0.8, radius * 0.6);
+    ctxCache.lineTo(-radius * 1.0, radius * 0.6);
+    ctxCache.lineTo(-radius * 0.9, radius * 0.4);
+    ctxCache.lineTo(-radius * 1.1, radius * 0.4);
+    ctxCache.lineTo(-radius * 1.0, radius * 0.2);
+    ctxCache.lineTo(-radius * 1.2, radius * 0.2);
+    ctxCache.lineTo(-radius * 0.6, -radius * 0.2);
+    ctxCache.closePath();
+    ctxCache.fillStyle = "#1a1208";
+    ctxCache.fill();
+    ctxCache.stroke();
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(radius * 0.8, -radius * 0.1);
+    ctxCache.bezierCurveTo(
+      radius * 1.2,
+      -radius * 0.3,
+      radius * 1.1,
+      radius * 0.6,
+      radius * 0.9,
+      radius * 0.6,
+    );
+    ctxCache.strokeStyle = "#ff3366";
+    ctxCache.lineWidth = 3;
+    ctxCache.stroke();
+
+    ctxCache.beginPath();
+    ctxCache.moveTo(-radius * 0.8, -radius * 0.1);
+    ctxCache.bezierCurveTo(
+      -radius * 1.2,
+      -radius * 0.3,
+      -radius * 1.1,
+      radius * 0.6,
+      -radius * 0.9,
+      radius * 0.6,
+    );
+    ctxCache.strokeStyle = "#ff3366";
+    ctxCache.stroke();
+
+    return cacheCanvas;
+  }
+
+  const enemyShooterImage = createEnemyCache(22);
+  const enemyKamikazeImage = createEnemyCache(14);
 
   function initGame() {
     document.body.classList.add("game-mode");
@@ -30,6 +158,8 @@
     score = 0;
     enemies = [];
     bossBullets = [];
+    particles = [];
+    enemyBullets = [];
     isGameOver = false;
     isGameWon = false;
     boss = null;
@@ -149,149 +279,22 @@
   }
 
   function drawEnemy(ctx, x, y, radius) {
-    ctx.save();
-    ctx.translate(x, y);
+    const img = radius === 22 ? enemyShooterImage : enemyKamikazeImage;
 
-    // --- 1. Efek Glow/Cahaya Inti (Outer Glow untuk Mata Bulan Sabit) ---
-    // Agar efek energinya tetap terasa, gua pake glow di sekitar inti mata.
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#ffc640"; // Glow warna kuning-oranye inti
+    ctx.drawImage(img, x - img.width / 2, y - img.height / 2);
+  }
 
-    // --- 2. Inti Mata Bulan Sabit di Tengah ---
-    ctx.beginPath();
-    ctx.arc(0, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
-    ctx.fillStyle = "#ffc640"; // Kuning bercahaya
-    ctx.fill();
-
-    // Bulan sabit gelap di tengah inti bercahaya
-    ctx.beginPath();
-    ctx.arc(-radius * 0.05, -radius * 0.1, radius * 0.35, 0, Math.PI * 2);
-    ctx.fillStyle = "#1a1208"; // Warna bodi gelap
-    ctx.fill();
-
-    // Reset shadow agar tidak mempengaruhi bodi
-    ctx.shadowBlur = 0;
-
-    // --- 3. Bodi Pusat Logam Gelap dan Mahkota ---
-    // Bentuk bodi memanjang ke bawah dengan paku di atas.
-    ctx.beginPath();
-    // Bodi utama
-    ctx.moveTo(0, radius); // Ujung bawah bodi
-    ctx.lineTo(radius * 0.6, -radius * 0.6); // Samping kanan bodi
-    ctx.lineTo(-radius * 0.6, -radius * 0.6); // Samping kiri bodi
-    ctx.closePath();
-    ctx.fillStyle = "#1a1208"; // Warna logam gelap
-    ctx.fill();
-
-    // Mahkota runcing di atas
-    ctx.beginPath();
-    ctx.moveTo(-radius * 0.4, -radius * 0.8);
-    ctx.lineTo(-radius * 0.2, -radius * 1.1);
-    ctx.lineTo(0, -radius * 0.9);
-    ctx.lineTo(radius * 0.2, -radius * 1.1);
-    ctx.lineTo(radius * 0.4, -radius * 0.8);
-    ctx.closePath();
-    ctx.fillStyle = "#1a1208";
-    ctx.fill();
-
-    // Stroke bodi
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // --- 4. Sayap Sabit Besar yang Bergerigi ---
-    // Dua sayap sabit besar di samping, dengan gergaji tajam di bagian bawah.
-
-    // Sayap Kanan
-    ctx.beginPath();
-    ctx.moveTo(radius * 0.6, -radius * 0.2); // Mulai dari samping bodi
-    ctx.bezierCurveTo(
-      radius * 1.5,
-      -radius * 0.5,
-      radius * 1.3,
-      radius,
-      radius * 0.8,
-      radius,
-    ); // Kurva sabit
-    // Gergaji tajam
-    ctx.lineTo(radius * 0.7, radius * 0.8);
-    ctx.lineTo(radius * 0.9, radius * 0.8);
-    ctx.lineTo(radius * 0.8, radius * 0.6);
-    ctx.lineTo(radius * 1.0, radius * 0.6);
-    ctx.lineTo(radius * 0.9, radius * 0.4);
-    ctx.lineTo(radius * 1.1, radius * 0.4);
-    ctx.lineTo(radius * 1.0, radius * 0.2);
-    ctx.lineTo(radius * 1.2, radius * 0.2);
-    ctx.lineTo(radius * 0.6, -radius * 0.2);
-    ctx.closePath();
-    ctx.fillStyle = "#1a1208";
-    ctx.fill();
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Sayap Kiri (Simetris)
-    ctx.beginPath();
-    ctx.moveTo(-radius * 0.6, -radius * 0.2);
-    ctx.bezierCurveTo(
-      -radius * 1.5,
-      -radius * 0.5,
-      -radius * 1.3,
-      radius,
-      -radius * 0.8,
-      radius,
-    );
-    // Gergaji tajam
-    ctx.lineTo(-radius * 0.7, radius * 0.8);
-    ctx.lineTo(-radius * 0.9, radius * 0.8);
-    ctx.lineTo(-radius * 0.8, radius * 0.6);
-    ctx.lineTo(-radius * 1.0, radius * 0.6);
-    ctx.lineTo(-radius * 0.9, radius * 0.4);
-    ctx.lineTo(-radius * 1.1, radius * 0.4);
-    ctx.lineTo(-radius * 1.0, radius * 0.2);
-    ctx.lineTo(-radius * 1.2, radius * 0.2);
-    ctx.lineTo(-radius * 0.6, -radius * 0.2);
-    ctx.closePath();
-    ctx.fillStyle = "#1a1208";
-    ctx.fill();
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // --- 5. Garis Aksen Merah pada Panel Sayap ---
-    // Garis merah tebal yang mengikuti tepi panel utama sabit.
-
-    // Sayap Kanan
-    ctx.beginPath();
-    ctx.moveTo(radius * 0.8, -radius * 0.1);
-    ctx.bezierCurveTo(
-      radius * 1.2,
-      -radius * 0.3,
-      radius * 1.1,
-      radius * 0.6,
-      radius * 0.9,
-      radius * 0.6,
-    );
-    ctx.strokeStyle = "#ff3366"; // Merah aksen tebal
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Sayap Kiri
-    ctx.beginPath();
-    ctx.moveTo(-radius * 0.8, -radius * 0.1);
-    ctx.bezierCurveTo(
-      -radius * 1.2,
-      -radius * 0.3,
-      -radius * 1.1,
-      radius * 0.6,
-      -radius * 0.9,
-      radius * 0.6,
-    );
-    ctx.strokeStyle = "#ff3366";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.restore();
+  function createExplosion(x, y, color) {
+    for (let i = 0; i < 15; i++) {
+      particles.push({
+        x: x,
+        y: y,
+        vx: (Math.random() - 0.5) * 8,
+        vy: (Math.random() - 0.5) * 8,
+        life: 1,
+        color: color,
+      });
+    }
   }
 
   // --- ANALOG JOYSTICK LOGIC ---
@@ -362,6 +365,11 @@
 
   function animate() {
     rctx.clearRect(0, 0, rocketCanvas.width, rocketCanvas.height);
+
+    rctx.globalAlpha = 1;
+    rctx.globalCompositeOperation = "source-over";
+    rctx.shadowBlur = 0;
+
     const isLight = document.body.classList.contains("light");
 
     if (isGameMode && !isGameOver && !isGameWon) {
@@ -382,21 +390,23 @@
       }
 
       if (!boss && Math.random() < 0.04) {
+        let isShooter = Math.random() < 0.3;
         enemies.push({
           x: Math.random() * rocketCanvas.width,
           y: -30,
-          radius: 12 + Math.random() * 15,
-          speed: 2 + Math.random() * 4,
+          radius: isShooter ? 22 : 14,
+          speed: isShooter ? 1.5 + Math.random() * 1.5 : 3 + Math.random() * 3,
+          type: isShooter ? "shooter" : "kamikaze",
+          shootTimer: 0,
         });
       }
     }
 
     if (boss && !isGameOver && !isGameWon) {
-      // --- 1. Logika Pergerakan ---
       if (boss.y < 150) {
-        boss.y += boss.vy; // Turun ke tengah layar
+        boss.y += boss.vy;
       } else {
-        boss.x += boss.vx; // Mondar-mandir kiri kanan
+        boss.x += boss.vx;
         if (
           boss.x - boss.radius < 0 ||
           boss.x + boss.radius > rocketCanvas.width
@@ -405,11 +415,8 @@
         }
       }
 
-      // --- 2. Timer Pola Serangan ---
       boss.attackTimer++;
 
-      // --- 3. Serangan Peluru Nyebar (Spread) ---
-      // Nembak 5 peluru sekaligus tiap 50 frame, asal lagi gak keluarin laser
       if (
         boss.attackTimer % 50 === 0 &&
         !boss.laserActive &&
@@ -417,7 +424,7 @@
       ) {
         let baseAngle = Math.atan2(r.y - boss.y, r.x - boss.x);
         for (let i = -2; i <= 2; i++) {
-          let angle = baseAngle + i * 0.25; // Jarak antar peluru
+          let angle = baseAngle + i * 0.25;
           bossBullets.push({
             x: boss.x,
             y: boss.y + boss.radius * 0.5,
@@ -427,17 +434,16 @@
         }
       }
 
-      // --- 4. Serangan Laser Raksasa ---
       if (boss.attackTimer === 150) {
-        boss.laserWarnTimer = 40; // Kasih warning 40 frame sebelum nembak
-        boss.vx = 0; // Boss berhenti gerak pas mau laser
+        boss.laserWarnTimer = 40;
+        boss.vx = 0;
       }
 
       if (boss.laserWarnTimer > 0) {
         boss.laserWarnTimer--;
         if (boss.laserWarnTimer === 0) {
           boss.laserActive = true;
-          boss.laserDuration = 50; // Laser nyala selama 50 frame
+          boss.laserDuration = 50;
         }
       }
 
@@ -445,16 +451,14 @@
         boss.laserDuration--;
         if (boss.laserDuration <= 0) {
           boss.laserActive = false;
-          boss.attackTimer = 0; // Reset siklus serangan
-          boss.vx = Math.random() > 0.5 ? 3 : -3; // Mulai gerak lagi
+          boss.attackTimer = 0;
+          boss.vx = Math.random() > 0.5 ? 3 : -3;
         }
       }
 
-      // --- 5. Visual Boss (Desain Alien Dreadnought) ---
       rctx.save();
       rctx.translate(boss.x, boss.y);
 
-      // Bodi utama
       rctx.beginPath();
       rctx.moveTo(0, boss.radius);
       rctx.lineTo(boss.radius, 0);
@@ -468,7 +472,6 @@
       rctx.lineWidth = 3;
       rctx.stroke();
 
-      // Garis detail armor
       rctx.beginPath();
       rctx.moveTo(0, boss.radius);
       rctx.lineTo(0, -boss.radius * 0.8);
@@ -477,7 +480,6 @@
       rctx.strokeStyle = "rgba(255, 51, 102, 0.5)";
       rctx.stroke();
 
-      // Power Core di tengah (Warna berubah jadi cyan kalau mau nembak laser)
       rctx.beginPath();
       rctx.arc(0, -boss.radius * 0.1, boss.radius * 0.35, 0, Math.PI * 2);
       rctx.fillStyle =
@@ -489,15 +491,12 @@
       rctx.fillStyle = "#ffffff";
       rctx.fill();
 
-      // Meriam energi di sayap
       rctx.fillStyle = "#6affcb";
       rctx.fillRect(-boss.radius * 0.8, -10, 8, 20);
       rctx.fillRect(boss.radius * 0.8 - 8, -10, 8, 20);
       rctx.restore();
 
-      // --- 6. Visual Laser & Hitbox Laser ---
       if (boss.laserWarnTimer > 0) {
-        // Garis putus-putus merah buat ngasih warning ke player
         rctx.beginPath();
         rctx.moveTo(boss.x, boss.y + boss.radius);
         rctx.lineTo(boss.x, rocketCanvas.height);
@@ -509,8 +508,7 @@
       }
 
       if (boss.laserActive) {
-        // Gambar Giant Laser Cyan
-        let laserWidth = 50 + Math.random() * 15; // Efek laser bergetar
+        let laserWidth = 50 + Math.random() * 15;
         rctx.fillStyle = "rgba(106, 255, 203, 0.9)";
         rctx.shadowBlur = 20;
         rctx.shadowColor = "#6affcb";
@@ -522,7 +520,6 @@
         );
         rctx.shadowBlur = 0;
 
-        // Deteksi Tabrakan Laser dengan Player
         if (
           r.x > boss.x - laserWidth / 2 - 12 &&
           r.x < boss.x + laserWidth / 2 + 12 &&
@@ -532,7 +529,6 @@
         }
       }
 
-      // --- 7. HP Bar & Deteksi Tabrakan Fisik Boss ---
       rctx.fillStyle = "rgba(255, 255, 255, 0.3)";
       rctx.fillRect(boss.x - 75, boss.y - boss.radius - 25, 150, 8);
       rctx.fillStyle = "#6affcb";
@@ -543,7 +539,6 @@
         8,
       );
 
-      // Kalau player nabrak bodi boss
       let dist = Math.hypot(r.x - boss.x, r.y - boss.y);
       if (dist < 12 + boss.radius * 0.8) {
         isGameOver = true;
@@ -555,13 +550,21 @@
       bb.x += bb.vx;
       bb.y += bb.vy;
 
+      rctx.save();
+      rctx.globalCompositeOperation = "lighter";
+      rctx.shadowBlur = 20;
+      rctx.shadowColor = "#ff3366";
+
       rctx.beginPath();
       rctx.arc(bb.x, bb.y, 5, 0, Math.PI * 2);
       rctx.fillStyle = "#ff3366";
       rctx.fill();
+
       rctx.strokeStyle = "#ffffff";
       rctx.lineWidth = 1.5;
       rctx.stroke();
+
+      rctx.restore();
 
       if (
         bb.x < 0 ||
@@ -601,10 +604,23 @@
       b.x += b.vx;
       b.y += b.vy;
 
-      rctx.beginPath();
-      rctx.arc(b.x, b.y, 2.5, 0, Math.PI * 2);
-      rctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
-      rctx.fill();
+      let angle = Math.atan2(b.vy, b.vx);
+
+      rctx.save();
+      rctx.translate(b.x, b.y);
+      rctx.rotate(angle);
+
+      rctx.globalCompositeOperation = "lighter";
+      rctx.shadowBlur = 15;
+      rctx.shadowColor = "#39ff14";
+
+      rctx.fillStyle = "#ffffff";
+      rctx.fillRect(-8, -2, 16, 4);
+
+      rctx.fillStyle = "rgba(57, 255, 20, 0.5)";
+      rctx.fillRect(-10, -4, 20, 8);
+
+      rctx.restore();
 
       if (
         b.x < 0 ||
@@ -622,9 +638,16 @@
         let dist = Math.hypot(b.x - boss.x, b.y - boss.y);
         if (dist < 2.5 + boss.radius) {
           boss.hp -= 5;
+
+          createExplosion(b.x, b.y, "#6affcb");
+
           bullets.splice(i, 1);
           hit = true;
           if (boss.hp <= 0) {
+            createExplosion(boss.x, boss.y, "#ff3366");
+            createExplosion(boss.x + 30, boss.y - 20, "#ffc640");
+            createExplosion(boss.x - 30, boss.y + 20, "#ffffff");
+
             boss = null;
             isGameWon = true;
             score += 500;
@@ -639,6 +662,8 @@
           let e = enemies[j];
           let dist = Math.hypot(b.x - e.x, b.y - e.y);
           if (dist < 2.5 + e.radius) {
+            createExplosion(e.x, e.y, "#ffc640");
+
             enemies.splice(j, 1);
             bullets.splice(i, 1);
             score += 10;
@@ -664,6 +689,85 @@
           isGameOver = true;
         }
       }
+    }
+
+    if (isGameMode && !isGameOver && !isGameWon) {
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+
+        if (e.type === "shooter") {
+          e.shootTimer++;
+          if (e.shootTimer > 60 && Math.random() < 0.05 && e.y < r.y) {
+            let angle = Math.atan2(r.y - e.y, r.x - e.x);
+            enemyBullets.push({
+              x: e.x,
+              y: e.y + e.radius,
+              vx: Math.cos(angle) * 6,
+              vy: Math.sin(angle) * 6,
+            });
+            e.shootTimer = 0;
+          }
+        }
+      }
+    }
+
+    for (let i = enemyBullets.length - 1; i >= 0; i--) {
+      let eb = enemyBullets[i];
+      eb.x += eb.vx;
+      eb.y += eb.vy;
+
+      let angle = Math.atan2(eb.vy, eb.vx);
+
+      rctx.save();
+      rctx.translate(eb.x, eb.y);
+      rctx.rotate(angle);
+
+      rctx.globalCompositeOperation = "lighter";
+      rctx.shadowBlur = 15;
+      rctx.shadowColor = "#ff3366";
+
+      rctx.fillStyle = "#ffffff";
+      rctx.fillRect(-6, -1.5, 12, 3);
+
+      rctx.fillStyle = "rgba(255, 51, 102, 0.5)";
+      rctx.fillRect(-8, -2.5, 16, 5);
+
+      rctx.restore();
+
+      if (
+        eb.x < 0 ||
+        eb.x > rocketCanvas.width ||
+        eb.y < 0 ||
+        eb.y > rocketCanvas.height
+      ) {
+        enemyBullets.splice(i, 1);
+        continue;
+      }
+
+      let dist = Math.hypot(eb.x - r.x, eb.y - r.y);
+      if (dist < 12 + 3) {
+        createExplosion(r.x, r.y, "#ff6a88");
+        isGameOver = true;
+      }
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      let p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= 0.04;
+
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      rctx.globalAlpha = p.life;
+      rctx.fillStyle = p.color;
+      rctx.beginPath();
+      rctx.arc(p.x, p.y, 2 + p.life * 2, 0, Math.PI * 2);
+      rctx.fill();
+      rctx.globalAlpha = 1;
     }
 
     if (isGameOver || isGameWon) {
@@ -711,12 +815,8 @@
             mouse.y = r.y + r.velocity.y * 10;
           }
         } else {
-          dx = mouse.x - r.x;
-          dy = mouse.y - r.y;
-          let dist = Math.hypot(dx, dy);
-          speed = Math.min(dist * 0.08, 12);
-          r.velocity.x = (dx / dist) * speed || 0;
-          r.velocity.y = (dy / dist) * speed || 0;
+          r.velocity.x = (mouse.x - r.x) * 0.35;
+          r.velocity.y = (mouse.y - r.y) * 0.35;
         }
       } else {
         dx = mouse.x - r.x;
