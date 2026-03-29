@@ -378,7 +378,7 @@
           x: rocketCanvas.width / 2,
           y: -150,
           radius: 80,
-          hp: 800,
+          hp: 1,
           maxHp: 800,
           vx: 3,
           vy: 1.5,
@@ -775,32 +775,86 @@
       rctx.font = "bold 40px 'Space Mono', monospace";
       rctx.textAlign = "center";
       if (isGameWon) {
-        rctx.fillStyle = "#6affcb";
+        if (Math.random() < 0.1) {
+          const randomX = Math.random() * rocketCanvas.width;
+          const randomY = Math.random() * (rocketCanvas.height * 0.6);
+          const colors = [
+            "#6affcb",
+            "#ff3366",
+            "#ffc640",
+            "#ffffff",
+            "#39ff14",
+          ];
+          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+          createExplosion(randomX, randomY, randomColor);
+        }
+
+        rctx.shadowBlur = 20;
+        rctx.shadowColor = "#6affcb";
+        rctx.fillStyle = "#ffffff";
+        rctx.font = "bold 50px 'Space Mono', monospace";
         rctx.fillText(
-          "YOU WIN!",
+          "SYSTEM CLEARED!",
           rocketCanvas.width / 2,
-          rocketCanvas.height / 2,
+          rocketCanvas.height / 2 - 40,
         );
+
+        rctx.shadowBlur = 0;
+
+        rctx.fillStyle = "#ffc640";
+        rctx.font = "bold 24px 'Space Mono', monospace";
+        rctx.fillText(
+          "FINAL SCORE: " + score,
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2 + 10,
+        );
+
+        rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
+        rctx.font = "italic 16px 'Space Mono', monospace";
+        rctx.fillText(
+          "// GACOR KANG.",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2 + 60,
+        );
+        // rctx.fillText(
+        //   "// Now scroll down to see my real Full Stack projects.",
+        //   rocketCanvas.width / 2,
+        //   rocketCanvas.height / 2 + 85,
+        // );
+
+        rctx.font = "14px 'Space Mono', monospace";
+        rctx.globalAlpha = 0.6;
+        rctx.fillText(
+          "Click anywhere to Restart or click EXIT GAME",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2 + 130,
+        );
+        rctx.globalAlpha = 1;
       } else {
-        rctx.fillStyle = "#ff6a88";
+        rctx.shadowBlur = 20;
+        rctx.shadowColor = "#ff6a88";
+        rctx.fillStyle = "#ffffff";
+        rctx.font = "bold 50px 'Space Mono', monospace";
         rctx.fillText(
           "GAME OVER",
           rocketCanvas.width / 2,
-          rocketCanvas.height / 2,
+          rocketCanvas.height / 2 - 20,
+        );
+
+        rctx.shadowBlur = 0;
+        rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
+        rctx.font = "20px 'Space Mono', monospace";
+        rctx.fillText(
+          "Click anywhere to Restart",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2 + 30,
+        );
+        rctx.fillText(
+          "or click EXIT GAME",
+          rocketCanvas.width / 2,
+          rocketCanvas.height / 2 + 60,
         );
       }
-      rctx.fillStyle = isLight ? "#1a1208" : "#ffffff";
-      rctx.font = "20px 'Space Mono', monospace";
-      rctx.fillText(
-        "Click anywhere to Restart",
-        rocketCanvas.width / 2,
-        rocketCanvas.height / 2 + 40,
-      );
-      rctx.fillText(
-        "or click EXIT GAME",
-        rocketCanvas.width / 2,
-        rocketCanvas.height / 2 + 70,
-      );
     } else {
       let dx, dy, speed;
       if (isGameMode) {
@@ -1102,7 +1156,7 @@ let isMoonExploding = false;
 
 if (moonContainer && moonSvg) {
   moonContainer.addEventListener("click", (e) => {
-    if (e.target.id === "playBtn") return;
+    if (e.target.closest("#playBtn")) return;
 
     if (isMoonExploding) return;
     isMoonExploding = true;
