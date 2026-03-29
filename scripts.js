@@ -378,7 +378,7 @@
           x: rocketCanvas.width / 2,
           y: -150,
           radius: 80,
-          hp: 1,
+          hp: 800,
           maxHp: 800,
           vx: 3,
           vy: 1.5,
