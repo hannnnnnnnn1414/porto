@@ -650,6 +650,30 @@
 
         let hit = false;
 
+        const moonEl = document.querySelector(".moon-container");
+        if (moonEl && !hit && window.isMoonExploding !== true) {
+          const moonRect = moonEl.getBoundingClientRect();
+          const canvasRect = rocketCanvas.getBoundingClientRect();
+
+          const bAbsX = b.x + canvasRect.left;
+          const bAbsY = b.y + canvasRect.top;
+
+          const moonCX = moonRect.left + moonRect.width / 2;
+          const moonCY = moonRect.top + moonRect.height / 2;
+          const moonR = (moonRect.width / 2) * 0.9;
+
+          if (Math.hypot(bAbsX - moonCX, bAbsY - moonCY) < moonR) {
+            if (typeof window.triggerMoonExplosion === "function") {
+              window.triggerMoonExplosion();
+            }
+            createExplosion(b.x, b.y, "#f0f0ff");
+
+            bullets.splice(i, 1);
+            hit = true;
+            continue;
+          }
+        }
+
         if (boss && !isGameOver && !isGameWon) {
           let dist = Math.hypot(b.x - boss.x, b.y - boss.y);
           if (dist < 2.5 + boss.radius) {
@@ -1164,86 +1188,609 @@ window.addEventListener("scroll", () => {
 
 const moonContainer = document.querySelector(".moon-container");
 const moonSvg = document.querySelector(".moon");
-const playBtn = document.getElementById("playBtn");
-let isMoonExploding = false;
 
-if (moonContainer && moonSvg) {
-  moonContainer.addEventListener("click", (e) => {
-    if (e.target.closest("#playBtn")) return;
+window.isMoonExploding = false;
 
-    if (isMoonExploding) return;
-    isMoonExploding = true;
+window.triggerMoonExplosion = function () {
+  if (!moonContainer || !moonSvg || window.isMoonExploding) return;
+  window.isMoonExploding = true;
 
-    moonContainer.classList.add("exploded");
+  moonContainer.classList.add("exploded");
 
-    moonSvg.style.transition = "opacity 0.1s";
-    moonSvg.style.opacity = "0";
+  moonSvg.style.transition = "opacity 0.1s";
+  moonSvg.style.opacity = "0";
 
-    const mCanvas = document.createElement("canvas");
-    mCanvas.width = 300;
-    mCanvas.height = 300;
-    mCanvas.style.position = "absolute";
-    mCanvas.style.top = "-95px";
-    mCanvas.style.left = "-95px";
-    mCanvas.style.pointerEvents = "none";
-    moonContainer.appendChild(mCanvas);
+  const mCanvas = document.createElement("canvas");
+  mCanvas.width = 300;
+  mCanvas.height = 300;
+  mCanvas.style.position = "absolute";
+  mCanvas.style.top = "-95px";
+  mCanvas.style.left = "-95px";
+  mCanvas.style.pointerEvents = "none";
+  moonContainer.appendChild(mCanvas);
 
-    const mCtx = mCanvas.getContext("2d");
-    const particles = [];
-    const colors = ["#f0f0ff", "#d0d0e8", "#e0e0f8", "#ffffff"];
+  const mCtx = mCanvas.getContext("2d");
+  const particles = [];
+  const colors = ["#f0f0ff", "#d0d0e8", "#e0e0f8", "#ffffff"];
 
-    for (let i = 0; i < 80; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * 45;
-      const startX = 150 + Math.cos(angle) * radius;
-      const startY = 150 + Math.sin(angle) * radius;
-      const speed = Math.random() * 6 + 2;
+  for (let i = 0; i < 80; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 45;
+    const startX = 150 + Math.cos(angle) * radius;
+    const startY = 150 + Math.sin(angle) * radius;
+    const speed = Math.random() * 6 + 2;
 
-      particles.push({
-        x: startX,
-        y: startY,
-        originX: startX,
-        originY: startY,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        size: Math.random() * 3.5 + 1.5,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      });
+    particles.push({
+      x: startX,
+      y: startY,
+      originX: startX,
+      originY: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 3.5 + 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    });
+  }
+
+  const startTime = Date.now();
+
+  function animateExplosion() {
+    const elapsed = Date.now() - startTime;
+    mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+
+    particles.forEach((p) => {
+      if (elapsed < 1400) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.93;
+        p.vy *= 0.93;
+      } else if (elapsed < 3000) {
+        const returnSpeed = 0.08;
+        p.x += (p.originX - p.x) * returnSpeed;
+        p.y += (p.originY - p.y) * returnSpeed;
+      }
+
+      mCtx.beginPath();
+      mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      mCtx.fillStyle = p.color;
+      mCtx.fill();
+    });
+
+    if (elapsed < 3000) {
+      requestAnimationFrame(animateExplosion);
+    } else {
+      mCanvas.remove();
+      moonSvg.style.opacity = "1";
+      window.isMoonExploding = false;
+      moonContainer.classList.remove("exploded");
+    }
+  }
+  animateExplosion();
+};
+
+// --- VIRTUAL ASSISTANT CHATBOT WIDGET ---
+
+// (function initChatbot() {
+//   const style = document.createElement("style");
+//   style.innerHTML = `
+//     .chatbot-toggle {
+//       position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px;
+//       border-radius: 50%; background: var(--accent); color: #fff; border: none;
+//       cursor: pointer; box-shadow: 0 4px 15px rgba(124, 106, 255, 0.4);
+//       z-index: 9999; display: flex; align-items: center; justify-content: center;
+//       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+//     }
+//     .chatbot-toggle:hover { transform: scale(1.1); }
+//     .chatbot-toggle svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; }
+    
+//     .chatbot-window {
+//       position: fixed; bottom: 100px; right: 30px; width: 320px; height: 450px;
+//       background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+//       box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; display: flex;
+//       flex-direction: column; overflow: hidden;
+//       transition: opacity 0.3s, transform 0.3s; transform-origin: bottom right;
+//     }
+//     .chatbot-window.hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
+    
+//     .chatbot-header {
+//       background: var(--bg3); padding: 15px; border-bottom: 1px solid var(--border);
+//       display: flex; justify-content: space-between; align-items: center;
+//       font-family: var(--mono); font-size: 0.85rem; color: var(--accent); font-weight: bold;
+//     }
+//     .chatbot-header span { display: flex; align-items: center; gap: 8px; }
+//     .chatbot-header span::before { content: ''; display: block; width: 8px; height: 8px; background: #39ff14; border-radius: 50%; box-shadow: 0 0 5px #39ff14; }
+//     .chatbot-close { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+    
+//     .chatbot-messages {
+//       flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+//     }
+//     /* Sembunyiin scrollbar tapi tetep bisa scroll */
+//     .chatbot-messages::-webkit-scrollbar { width: 4px; }
+//     .chatbot-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    
+//     .chat-msg {
+//       max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; line-height: 1.5; word-wrap: break-word;
+//     }
+//     .chat-msg.bot { background: var(--bg3); color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; }
+//     .chat-msg.user { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+//     .chat-msg a { color: var(--accent3); text-decoration: none; font-weight: bold; }
+    
+//     .chatbot-input-area {
+//       display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--bg); gap: 8px;
+//     }
+//     .chatbot-input-area input {
+//       flex: 1; background: transparent; border: none; color: var(--text);
+//       font-family: var(--sans); font-size: 0.9rem; outline: none; padding: 5px;
+//     }
+//     .chatbot-input-area button {
+//       background: var(--accent); color: #fff; border: none; border-radius: 4px; width: 35px;
+//       cursor: pointer; font-family: var(--mono); font-weight: bold; transition: opacity 0.2s;
+//     }
+//     .chatbot-input-area button:hover { opacity: 0.8; }
+    
+//     @media (max-width: 768px) {
+//       .chatbot-window { width: calc(100vw - 40px); right: 20px; bottom: 90px; height: 400px; }
+//       .chatbot-toggle { bottom: 20px; right: 20px; }
+//     }
+//   `;
+//   document.head.appendChild(style);
+
+//   const toggleBtn = document.createElement("button");
+//   toggleBtn.className = "chatbot-toggle";
+//   toggleBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
+
+//   const chatWindow = document.createElement("div");
+//   chatWindow.className = "chatbot-window hidden";
+//   chatWindow.innerHTML = `
+//     <div class="chatbot-header">
+//       <span>HFR_BOT v1.0</span>
+//       <button class="chatbot-close">&times;</button>
+//     </div>
+//     <div class="chatbot-messages" id="chatMsgs"></div>
+//     <div class="chatbot-input-area">
+//       <input type="text" id="chatInput" placeholder="Ketik sesuatu..." autocomplete="off">
+//       <button id="chatSend">➤</button>
+//     </div>
+//   `;
+
+//   document.body.appendChild(toggleBtn);
+//   document.body.appendChild(chatWindow);
+
+//   const chatMsgs = document.getElementById("chatMsgs");
+//   const chatInput = document.getElementById("chatInput");
+//   const chatSend = document.getElementById("chatSend");
+//   const closeBtn = chatWindow.querySelector(".chatbot-close");
+
+//   let isFirstOpen = true;
+
+//   toggleBtn.addEventListener("click", () => {
+//     chatWindow.classList.remove("hidden");
+//     toggleBtn.style.transform = "scale(0)";
+//     if (isFirstOpen) {
+//       setTimeout(
+//         () =>
+//           addMessage(
+//             "bot",
+//             "Halo! Gua asisten virtualnya Hanif. Ada yang bisa gua bantu? Lu bisa nanya soal <b>skills</b>, <b>projects</b>, atau <b>contact</b>.",
+//           ),
+//         300,
+//       );
+//       isFirstOpen = false;
+//     }
+//     setTimeout(() => chatInput.focus(), 300);
+//   });
+
+//   closeBtn.addEventListener("click", () => {
+//     chatWindow.classList.add("hidden");
+//     toggleBtn.style.transform = "scale(1)";
+//   });
+
+//   function addMessage(sender, text) {
+//     const msg = document.createElement("div");
+//     msg.className = `chat-msg ${sender}`;
+//     msg.innerHTML = text;
+//     chatMsgs.appendChild(msg);
+//     chatMsgs.scrollTop = chatMsgs.scrollHeight;
+//   }
+
+//   function handleSend() {
+//     const val = chatInput.value.trim();
+//     if (!val) return;
+
+//     addMessage("user", val);
+//     chatInput.value = "";
+
+//     setTimeout(() => {
+//       botResponse(val.toLowerCase());
+//     }, 600);
+//   }
+
+//   chatSend.addEventListener("click", handleSend);
+//   chatInput.addEventListener("keypress", (e) => {
+//     if (e.key === "Enter") handleSend();
+//   });
+
+//   function botResponse(input) {
+//     let reply = "";
+
+//     if (
+//       input.includes("skill") ||
+//       input.includes("bisa apa") ||
+//       input.includes("tech")
+//     ) {
+//       reply =
+//         "Hanif itu Full Stack Developer. Dia biasa pakai <b>Node.js, Express, Laravel, TypeScript</b>, sama database kayak <b>PostgreSQL & MySQL</b>.";
+//     } else if (
+//       input.includes("project") ||
+//       input.includes("proyek") ||
+//       input.includes("bikin apa")
+//     ) {
+//       reply =
+//         "Banyak bro! Mulai dari sistem budget, OCR Stock Opname, sampai API Tracker pakai Prisma. Cek aja bagian <a href='#projects'>Projects</a> di web ini.";
+//     } else if (
+//       input.includes("contact") ||
+//       input.includes("hubungi") ||
+//       input.includes("email") ||
+//       input.includes("linkedin")
+//     ) {
+//       reply =
+//         "Lu bisa email dia di <b>haniffathurrahmanrustanto@gmail.com</b> atau langsung mampir ke <a href='https://www.linkedin.com/in/hanif-fathurrahman-rustanto' target='_blank'>LinkedIn-nya</a>.";
+//     } else if (
+//       input.includes("kerja") ||
+//       input.includes("intern") ||
+//       input.includes("kayaba")
+//     ) {
+//       reply =
+//         "Sekarang dia lagi asik nge-intern di <b>PT Kayaba Indonesia</b> (sejak Jan 2025). Dia handle banyak internal web system di sana yang kepake langsung sama departemen-departemen.";
+//     } else if (
+//       input.includes("halo") ||
+//       input.includes("hai") ||
+//       input.includes("hi") ||
+//       input.includes("pagi") ||
+//       input.includes("malam")
+//     ) {
+//       reply = "Halo juga! Mau nanya-nanya apa nih seputar portofolionya Hanif?";
+//     } else if (
+//       input.includes("kuliah") ||
+//       input.includes("kampus") ||
+//       input.includes("stmi")
+//     ) {
+//       reply =
+//         "Hanif lagi kuliah tingkat akhir di <b>Politeknik STMI Jakarta</b>, ambil jurusan Sistem Informasi Industri Otomotif. Udah semester 8 nih!";
+//     } else {
+//       reply =
+//         "Waduh, gua cuma bot sederhana bro, agak kurang paham maksud lu 😅. Coba ketik keyword kayak <b>skills</b>, <b>projects</b>, atau <b>contact</b>.";
+//     }
+
+//     addMessage("bot", reply);
+//   }
+// })();
+
+// --- TERMINAL EASTER EGG (CLASSIC MODE) ---
+(function initTerminalEasterEgg() {
+  const terminalBtn = document.getElementById("terminalBtn");
+  const heroTitle = document.querySelector("h1");
+  let keyBuffer = "";
+  const secretCode = "sudo";
+  let tapCount = 0;
+  let tapTimer;
+
+  if (terminalBtn) {
+    terminalBtn.addEventListener("click", openTerminal);
+  }
+
+  if (heroTitle) {
+    heroTitle.style.cursor = "pointer";
+    heroTitle.title = "Click me 5 times...";
+    heroTitle.addEventListener("click", () => {
+      tapCount++;
+      clearTimeout(tapTimer);
+      if (tapCount >= 5) {
+        openTerminal();
+        tapCount = 0;
+      } else {
+        tapTimer = setTimeout(() => {
+          tapCount = 0;
+        }, 400);
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.target.tagName.toLowerCase() === "input" ||
+      e.target.tagName.toLowerCase() === "textarea"
+    )
+      return;
+
+    if (e.ctrlKey && e.key === "`") {
+      e.preventDefault();
+      openTerminal();
+      return;
     }
 
-    const startTime = Date.now();
+    keyBuffer += e.key.toLowerCase();
+    if (keyBuffer.length > secretCode.length) {
+      keyBuffer = keyBuffer.slice(-secretCode.length);
+    }
+    if (keyBuffer === secretCode) {
+      openTerminal();
+      keyBuffer = "";
+    }
+  });
 
-    function animateExplosion() {
-      const elapsed = Date.now() - startTime;
-      mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+  console.log(
+    "%cHello there, curious dev! 🕵️‍♂️",
+    "color: #39ff14; font-size: 20px; font-weight: bold; background: #1a1208; padding: 10px; border-radius: 5px;",
+  );
+  console.log(
+    "%cLooking under the hood? Try typing 'sudo' anywhere on the page, or hit Ctrl + ` to access the mainframe.",
+    "color: #ff3366; font-size: 14px;",
+  );
 
-      particles.forEach((p) => {
-        if (elapsed < 1400) {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.93;
-          p.vy *= 0.93;
-        } else if (elapsed < 3000) {
-          const returnSpeed = 0.08;
-          p.x += (p.originX - p.x) * returnSpeed;
-          p.y += (p.originY - p.y) * returnSpeed;
+  function openTerminal() {
+    if (document.getElementById("terminalContainer")) return;
+
+    document.body.classList.add("game-mode");
+
+    const termContainer = document.createElement("div");
+    termContainer.id = "terminalContainer";
+    termContainer.style.cssText = `
+      position: fixed; inset: 0; z-index: 99999; background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(10px); display: flex; flex-direction: column;
+      padding: 2rem; font-family: 'Space Mono', monospace; color: #39ff14;
+      overflow-y: auto; font-size: 0.95rem; line-height: 1.6;
+    `;
+
+    const outputContainer = document.createElement("div");
+    outputContainer.id = "terminalOutput";
+    outputContainer.style.cssText =
+      "margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;";
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.style.cssText =
+      "display: flex; gap: 0.8rem; align-items: center;";
+
+    const promptStr = "hfr@dev:~$";
+    const promptEl = document.createElement("span");
+    promptEl.textContent = promptStr;
+    promptEl.style.color = "#ff3366";
+
+    const inputEl = document.createElement("input");
+    inputEl.type = "text";
+    inputEl.style.cssText = `
+      flex: 1; background: transparent; border: none; color: #39ff14;
+      font-family: 'Space Mono', monospace; font-size: 0.95rem; outline: none;
+    `;
+    inputEl.autocomplete = "off";
+    inputEl.spellcheck = false;
+
+    inputWrapper.appendChild(promptEl);
+    inputWrapper.appendChild(inputEl);
+
+    termContainer.appendChild(outputContainer);
+    termContainer.appendChild(inputWrapper);
+
+    const exitBtn = document.createElement("button");
+    exitBtn.textContent = "EXIT TERMINAL";
+    exitBtn.style.cssText = `
+      position: fixed; top: 20px; right: 30px; background: transparent;
+      color: #ff3366; border: 1px solid #ff3366; padding: 0.5rem 1rem;
+      font-family: 'Space Mono', monospace; cursor: pointer; z-index: 100000;
+      border-radius: 3px; font-size: 0.8rem;
+    `;
+    exitBtn.addEventListener("click", closeTerminal);
+    termContainer.appendChild(exitBtn);
+
+    document.body.appendChild(termContainer);
+    inputEl.focus();
+
+    printToTerminal("Booting HFR OS v1.0.0...");
+    setTimeout(() => printToTerminal("Loading modules: [OK]"), 300);
+    setTimeout(() => printToTerminal("Connecting to database: [OK]"), 600);
+    setTimeout(() => {
+      printToTerminal("System Ready. Type 'help' to see available commands.");
+      printToTerminal("--------------------------------------------------");
+    }, 900);
+
+    termContainer.addEventListener("click", () => inputEl.focus());
+
+    inputEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const val = this.value.trim();
+        if (val) {
+          printToTerminal(
+            `<span style="color: #ff3366;">${promptStr}</span> ${val}`,
+            true,
+          );
+          processCommand(val);
         }
+        this.value = "";
+        termContainer.scrollTop = termContainer.scrollHeight;
+      }
+    });
 
-        mCtx.beginPath();
-        mCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        mCtx.fillStyle = p.color;
-        mCtx.fill();
-      });
+    function closeTerminal() {
+      document.body.classList.remove("game-mode");
+      termContainer.style.transition = "opacity 0.5s ease";
+      termContainer.style.opacity = "0";
+      setTimeout(() => termContainer.remove(), 500);
+    }
 
-      if (elapsed < 3000) {
-        requestAnimationFrame(animateExplosion);
-      } else {
-        mCanvas.remove();
-        moonSvg.style.opacity = "1";
-        isMoonExploding = false;
-        moonContainer.classList.remove("exploded");
+    function printToTerminal(text, isHtml = false) {
+      const line = document.createElement("div");
+      if (isHtml) line.innerHTML = text;
+      else line.textContent = text;
+      outputContainer.appendChild(line);
+      termContainer.scrollTop = termContainer.scrollHeight;
+    }
+
+    function processCommand(cmd) {
+      const args = cmd.split(" ");
+      const mainCmd = args[0].toLowerCase();
+
+      switch (mainCmd) {
+        case "help":
+          printToTerminal("Available commands:");
+          printToTerminal("  whoami   - Display current user information");
+          printToTerminal("  skills   - List technical stack & languages");
+          printToTerminal("  projects - Show current active deployments");
+          printToTerminal("  contact  - Retrieve communication links");
+          printToTerminal("  cv       - Download my resume / CV");
+          printToTerminal("  github   - Open my GitHub profile");
+          printToTerminal("  linkedin - Open my LinkedIn profile");
+          printToTerminal("  instagram- Open my Instagram profile");
+          printToTerminal("  clear    - Clear the terminal screen");
+          printToTerminal("  exit     - Terminate session");
+          printToTerminal("--------------------------------------------------");
+          printToTerminal(
+            "Try standard dev commands too! (git, npm, php, ping, rm)",
+          );
+          break;
+        case "whoami":
+          printToTerminal("Name   : Hanif Fathurrahman Rustanto");
+          printToTerminal("Role   : Full Stack Developer");
+          printToTerminal(
+            "Status : Engineering systems at PT Kayaba Indonesia.",
+          );
+          printToTerminal(
+            "Desc   : Turning complex business processes into clean, efficient digital workflows.",
+          );
+          break;
+        case "skills":
+          printToTerminal("> Core Runtime : Node.js, PHP, Python");
+          printToTerminal(
+            "> Frameworks   : Express, Laravel, Tailwind, Bootstrap",
+          );
+          printToTerminal("> Languages    : TypeScript, JavaScript");
+          printToTerminal(
+            "> Database/ORM : PostgreSQL, MySQL, Prisma, Eloquent",
+          );
+          break;
+        case "projects":
+          printToTerminal("Fetching repositories...");
+          printToTerminal(" [1] Stock Opname OCR Monitoring System");
+          printToTerminal(" [2] Backend Subscription Tracker API");
+          printToTerminal(" [3] Event Guest Registration & Display System");
+          printToTerminal(" [4] Digitalized Master Budget Workflow");
+          break;
+        case "contact":
+          printToTerminal("Email  : haniffathurrahmanrustanto@gmail.com");
+          printToTerminal("Phone  : +62 877 8053 6163");
+          break;
+        case "resume":
+        case "cv":
+          printToTerminal("Downloading CV/Resume...");
+          const link = document.createElement("a");
+          link.href = "Hanif_Fathurrahman_CV.pdf";
+          link.download = "Hanif_Fathurrahman_CV.pdf";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          break;
+        case "github":
+          printToTerminal("Opening GitHub...");
+          window.open("https://github.com/hannnnnnnnn1414/", "_blank");
+          break;
+        case "linkedin":
+          printToTerminal("Opening LinkedIn...");
+          window.open(
+            "https://www.linkedin.com/in/hanif-fathurrahman-rustanto/",
+            "_blank",
+          );
+          break;
+        case "instagram":
+        case "ig":
+          printToTerminal("Opening Instagram...");
+          window.open("https://www.instagram.com/haniv_fr", "_blank");
+          break;
+        case "rm":
+          if (args[1] === "-rf") {
+            printToTerminal(
+              "<span style='color: #ff3366;'>CRITICAL: Initiating self-destruct sequence...</span>",
+              true,
+            );
+            printToTerminal(
+              "<span style='color: #ff3366;'>Deleting root filesystem...</span>",
+              true,
+            );
+
+            setTimeout(() => {
+              document.body.innerHTML =
+                "<h1 style='color:#ff3366; text-align:center; margin-top:40vh; font-family:monospace; text-shadow: 0 0 20px #ff3366;'>SYSTEM DESTROYED.</h1><p style='color:#fff; text-align:center; font-family:monospace;'>Rebooting in 3 seconds...</p>";
+              setTimeout(() => location.reload(), 3000);
+            }, 1500);
+          } else {
+            printToTerminal(
+              "rm: missing operand. Try 'rm -rf /' if you are brave.",
+            );
+          }
+          break;
+        case "git":
+          printToTerminal("On branch main. Working tree clean.");
+          break;
+        case "ping":
+          printToTerminal("PING kayaba.co.id (142.250.191.46): 56 data bytes");
+          setTimeout(
+            () =>
+              printToTerminal(
+                "64 bytes from 142.250.191.46: icmp_seq=0 ttl=116 time=14.2 ms",
+              ),
+            500,
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "64 bytes from 142.250.191.46: icmp_seq=1 ttl=116 time=12.1 ms",
+              ),
+            1000,
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "--- kayaba.co.id ping statistics ---\n2 packets transmitted, 2 packets received, 0.0% packet loss",
+              ),
+            1500,
+          );
+          break;
+        case "npm":
+          if (args[1] === "run" && args[2] === "dev") {
+            printToTerminal(
+              "<span style='color: #39ff14;'>  VITE v4.3.9</span> ready in 345 ms",
+              true,
+            );
+          } else {
+            printToTerminal("npm ERR! Missing script: " + (args[2] || ""));
+          }
+          break;
+        case "php":
+          if (args[1] === "artisan" && args[2] === "serve") {
+            printToTerminal(
+              "<span style='color: #39ff14;'>INFO</span> Server running on [http://127.0.0.1:8000].",
+              true,
+            );
+          } else {
+            printToTerminal("Could not open input file: artisan");
+          }
+          break;
+        case "clear":
+          outputContainer.innerHTML = "";
+          break;
+        case "exit":
+          printToTerminal("Closing connection...");
+          setTimeout(closeTerminal, 600);
+          break;
+        case "sudo":
+          printToTerminal(
+            "Nice try. This incident will be reported to the sysadmin.",
+          );
+          break;
+        default:
+          if (cmd !== "")
+            printToTerminal(
+              `Command not found: ${mainCmd}. Type 'help' for a list of commands.`,
+            );
       }
     }
-    animateExplosion();
-  });
-}
+  }
+})();
