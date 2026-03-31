@@ -606,7 +606,6 @@
         const offsetX = Math.cos(r.angle) * 15;
         const offsetY = Math.sin(r.angle) * 15;
 
-        // Peluru utama (tengah)
         bullets.push({
           x: r.x + offsetX,
           y: r.y + offsetY,
@@ -614,7 +613,6 @@
           vy: Math.sin(r.angle) * bulletSpeed,
         });
 
-        // Cek apakah buff aktif dari terminal
         if (window.rocketBuffActive) {
           bullets.push({
             x: r.x + offsetX,
@@ -1996,7 +1994,6 @@ window.triggerMoonExplosion = function () {
       }
       matrixInterval = setInterval(drawMatrix, 33);
 
-      // Stop matrix on ESC
       const stopMatrix = (e) => {
         if (e.key === "Escape") {
           clearInterval(matrixInterval);
