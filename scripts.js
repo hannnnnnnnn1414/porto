@@ -605,12 +605,31 @@
         const bulletSpeed = 12;
         const offsetX = Math.cos(r.angle) * 15;
         const offsetY = Math.sin(r.angle) * 15;
+
+        // Peluru utama (tengah)
         bullets.push({
           x: r.x + offsetX,
           y: r.y + offsetY,
           vx: Math.cos(r.angle) * bulletSpeed,
           vy: Math.sin(r.angle) * bulletSpeed,
         });
+
+        // Cek apakah buff aktif dari terminal
+        if (window.rocketBuffActive) {
+          bullets.push({
+            x: r.x + offsetX,
+            y: r.y + offsetY,
+            vx: Math.cos(r.angle - 0.2) * bulletSpeed,
+            vy: Math.sin(r.angle - 0.2) * bulletSpeed,
+          });
+          bullets.push({
+            x: r.x + offsetX,
+            y: r.y + offsetY,
+            vx: Math.cos(r.angle + 0.2) * bulletSpeed,
+            vy: Math.sin(r.angle + 0.2) * bulletSpeed,
+          });
+        }
+
         fireCooldown = 6;
       }
       if (fireCooldown > 0) fireCooldown--;
@@ -1282,7 +1301,7 @@ window.triggerMoonExplosion = function () {
 //     }
 //     .chatbot-toggle:hover { transform: scale(1.1); }
 //     .chatbot-toggle svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; }
-    
+
 //     .chatbot-window {
 //       position: fixed; bottom: 100px; right: 30px; width: 320px; height: 450px;
 //       background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
@@ -1291,7 +1310,7 @@ window.triggerMoonExplosion = function () {
 //       transition: opacity 0.3s, transform 0.3s; transform-origin: bottom right;
 //     }
 //     .chatbot-window.hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
-    
+
 //     .chatbot-header {
 //       background: var(--bg3); padding: 15px; border-bottom: 1px solid var(--border);
 //       display: flex; justify-content: space-between; align-items: center;
@@ -1300,21 +1319,21 @@ window.triggerMoonExplosion = function () {
 //     .chatbot-header span { display: flex; align-items: center; gap: 8px; }
 //     .chatbot-header span::before { content: ''; display: block; width: 8px; height: 8px; background: #39ff14; border-radius: 50%; box-shadow: 0 0 5px #39ff14; }
 //     .chatbot-close { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; line-height: 1; }
-    
+
 //     .chatbot-messages {
 //       flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
 //     }
 //     /* Sembunyiin scrollbar tapi tetep bisa scroll */
 //     .chatbot-messages::-webkit-scrollbar { width: 4px; }
 //     .chatbot-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    
+
 //     .chat-msg {
 //       max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; line-height: 1.5; word-wrap: break-word;
 //     }
 //     .chat-msg.bot { background: var(--bg3); color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; }
 //     .chat-msg.user { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
 //     .chat-msg a { color: var(--accent3); text-decoration: none; font-weight: bold; }
-    
+
 //     .chatbot-input-area {
 //       display: flex; padding: 10px; border-top: 1px solid var(--border); background: var(--bg); gap: 8px;
 //     }
@@ -1327,7 +1346,7 @@ window.triggerMoonExplosion = function () {
 //       cursor: pointer; font-family: var(--mono); font-weight: bold; transition: opacity 0.2s;
 //     }
 //     .chatbot-input-area button:hover { opacity: 0.8; }
-    
+
 //     @media (max-width: 768px) {
 //       .chatbot-window { width: calc(100vw - 40px); right: 20px; bottom: 90px; height: 400px; }
 //       .chatbot-toggle { bottom: 20px; right: 20px; }
@@ -1474,6 +1493,53 @@ window.triggerMoonExplosion = function () {
   const secretCode = "sudo";
   let tapCount = 0;
   let tapTimer;
+
+  const heroInput = document.getElementById("heroTerminalInput");
+
+  if (heroInput) {
+    document.getElementById("hero").addEventListener("click", () => {
+      heroInput.focus();
+    });
+
+    heroInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const command = heroInput.value.toLowerCase().trim();
+
+        switch (command) {
+          case "sudo":
+          case "terminal":
+            if (typeof openTerminal === "function") openTerminal();
+            break;
+          case "projects":
+          case "dir":
+            document
+              .getElementById("projects")
+              .scrollIntoView({ behavior: "smooth" });
+            break;
+          case "contact":
+          case "mail":
+            document
+              .getElementById("contact")
+              .scrollIntoView({ behavior: "smooth" });
+            break;
+          case "about":
+            document
+              .getElementById("about")
+              .scrollIntoView({ behavior: "smooth" });
+            break;
+          case "cls":
+          case "clear":
+            heroInput.value = "";
+            break;
+          default:
+            heroInput.style.color = "var(--accent2)"; 
+            setTimeout(() => (heroInput.style.color = "var(--text)"), 500);
+        }
+
+        if (command !== "") heroInput.value = "";
+      }
+    });
+  }
 
   if (terminalBtn) {
     terminalBtn.addEventListener("click", openTerminal);
@@ -1644,7 +1710,7 @@ window.triggerMoonExplosion = function () {
           printToTerminal("  exit     - Terminate session");
           printToTerminal("--------------------------------------------------");
           printToTerminal(
-            "Try standard dev commands too! (git, npm, php, ping, rm)",
+            "Try standard dev commands too! (git, npm, php, ping, rm, matrix, buff, neofetch, analyze-site)",
           );
           break;
         case "whoami":
@@ -1780,6 +1846,105 @@ window.triggerMoonExplosion = function () {
           printToTerminal("Closing connection...");
           setTimeout(closeTerminal, 600);
           break;
+        case "analyze-site":
+          printToTerminal(
+            "<span style='color: #ffc640;'>[INIT]</span> Starting site analysis...",
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "<span style='color: #39ff14;'>[SCANNING]</span> DOM Elements... 142 detected.",
+              ),
+            600,
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "<span style='color: #39ff14;'>[CHECKING]</span> Tech Stack... Frontend optimized. Canvas active.",
+              ),
+            1400,
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "<span style='color: #39ff14;'>[VERIFYING]</span> Backend Architecture... TypeScript/Express endpoints validated.",
+              ),
+            2200,
+          );
+          setTimeout(
+            () =>
+              printToTerminal(
+                "<span style='color: #ff3366;'>[RESULT]</span> Performance: OVER 9000. Creativity: OVERFLOW.",
+              ),
+            3000,
+          );
+          break;
+
+        case "git":
+          if (args[1] === "log") {
+            printToTerminal(
+              "<span style='color: #ffc640;'>commit 8f3a1b</span> (HEAD -> main) fixed 'moon' explosion logic... again.",
+            );
+            printToTerminal(
+              "<span style='color: #ffc640;'>commit 2c9b4e</span> deployed Stock Opname OCR system to PT Kayaba staging.",
+            );
+            printToTerminal(
+              "<span style='color: #ffc640;'>commit 5d7a2f</span> refactored MIS department dashboard.",
+            );
+            printToTerminal(
+              "<span style='color: #ffc640;'>commit 1a0d7c</span> setting up TypeScript environment for semester 8 final project.",
+            );
+            printToTerminal(
+              "<span style='color: #ffc640;'>commit 000000</span> (root) Initial commit: Hello World.",
+            );
+          } else {
+            printToTerminal(
+              "On branch main. Working tree clean. Type 'git log' to see history.",
+            );
+          }
+          break;
+
+        case "buff":
+          if (args[1] === "--skills") {
+            window.rocketBuffActive = true;
+            printToTerminal(
+              "<span style='color: #39ff14;'>[BUFF APPLIED]</span> Weapon systems upgraded. Triple-shot engaged!",
+            );
+            printToTerminal(
+              "Try clicking on the screen outside the terminal now.",
+            );
+          } else {
+            printToTerminal("Usage: buff --skills");
+          }
+          break;
+
+        case "neofetch":
+          // Pake tag <pre> biar spasi dan enter-nya presisi
+          const asciiArt = `
+<pre style='color: #39ff14; margin: 0; font-family: inherit; line-height: 1.2;'>
+   __   __  _____  ___ 
+  / / / / / ___/ / _ \\
+ / /_/ / / __/  / , _/
+/ __  / / /    / /| | 
+\\/ /_/ /_/    /_/ |_| 
+</pre>`;
+          printToTerminal(asciiArt, true);
+          printToTerminal("-------------------");
+          printToTerminal("<b>OS:</b> HanifOS v1.0 / Politeknik STMI", true);
+          printToTerminal("<b>Kernel:</b> Coffee & TypeScript", true);
+          printToTerminal("<b>Uptime:</b> 8 Semesters", true);
+          printToTerminal("<b>Shell:</b> Zsh (Zuper Skilled Human)", true);
+          printToTerminal(
+            "<b>Stack:</b> Laravel, Node.js, Express, Prisma",
+            true,
+          );
+          printToTerminal("<b>Role:</b> Full Stack Developer", true);
+          break;
+
+        case "matrix":
+          printToTerminal("Entering the Matrix... (Press ESC to exit)");
+          setTimeout(startMatrixEffect, 500);
+          break;
         case "sudo":
           printToTerminal(
             "Nice try. This incident will be reported to the sysadmin.",
@@ -1791,6 +1956,59 @@ window.triggerMoonExplosion = function () {
               `Command not found: ${mainCmd}. Type 'help' for a list of commands.`,
             );
       }
+    }
+
+    let matrixInterval;
+    function startMatrixEffect() {
+      if (document.getElementById("matrixCanvas")) return;
+
+      const mCanvas = document.createElement("canvas");
+      mCanvas.id = "matrixCanvas";
+      mCanvas.style.cssText =
+        "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none;";
+      termContainer.insertBefore(mCanvas, outputContainer);
+
+      const mCtx = mCanvas.getContext("2d");
+      mCanvas.width = termContainer.offsetWidth;
+      mCanvas.height = termContainer.offsetHeight;
+
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+      const fontSize = 16;
+      const columns = mCanvas.width / fontSize;
+      const drops = [];
+      for (let x = 0; x < columns; x++) drops[x] = 1;
+
+      function drawMatrix() {
+        mCtx.fillStyle = "rgba(10, 10, 15, 0.1)";
+        mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+        mCtx.fillStyle = "#39ff14";
+        mCtx.font = fontSize + "px 'Space Mono', monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = letters.charAt(
+            Math.floor(Math.random() * letters.length),
+          );
+          mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > mCanvas.height && Math.random() > 0.975)
+            drops[i] = 0;
+          drops[i]++;
+        }
+      }
+      matrixInterval = setInterval(drawMatrix, 33);
+
+      // Stop matrix on ESC
+      const stopMatrix = (e) => {
+        if (e.key === "Escape") {
+          clearInterval(matrixInterval);
+          mCanvas.remove();
+          printToTerminal(
+            "<span style='color: #ffc640;'>Matrix effect terminated.</span>",
+            true,
+          );
+          document.removeEventListener("keydown", stopMatrix);
+        }
+      };
+      document.addEventListener("keydown", stopMatrix);
     }
   }
 })();

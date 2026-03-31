@@ -1657,3 +1657,38 @@ body.light #joystickZone {
   pointer-events: none;
   box-shadow: 0 0 15px var(--accent);
 }
+
+.terminal-prompt-container {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--mono);
+  font-size: 1rem;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 1rem;
+}
+
+.terminal-path {
+  color: #ffffff; 
+  white-space: nowrap;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: var(--mono);
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  caret-color: var(--accent); 
+}
+
+@media (max-width: 768px) {
+  .terminal-prompt-container {
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+}
