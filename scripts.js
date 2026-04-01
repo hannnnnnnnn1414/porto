@@ -1230,17 +1230,28 @@ function typeLoop() {
 setTimeout(typeLoop, 900);
 
 // REVEAL
-const reveals = document.querySelectorAll(".reveal");
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting)
-        setTimeout(() => entry.target.classList.add("visible"), i * 80);
+document.addEventListener("DOMContentLoaded", () => {
+  const reveals = document.querySelectorAll(".reveal");
+
+  const revealOptions = {
+    threshold: 0.15,
+    rootMargin: "0px 0px -50px 0px",
+  };
+
+  const revealOnScroll = new IntersectionObserver(function (entries) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+      } else {
+        entry.target.classList.remove("visible");
+      }
     });
-  },
-  { threshold: 0.1 },
-);
-reveals.forEach((el) => observer.observe(el));
+  }, revealOptions);
+
+  reveals.forEach((reveal) => {
+    revealOnScroll.observe(reveal);
+  });
+});
 
 // NAV ACTIVE
 const sections = document.querySelectorAll("section[id]");
@@ -2021,7 +2032,6 @@ window.triggerMoonExplosion = function () {
           break;
 
         case "neofetch":
-          // Pake tag <pre> biar spasi dan enter-nya presisi
           const asciiArt = `
 <pre style='color: #39ff14; margin: 0; font-family: inherit; line-height: 1.2;'>
    __   __  _____  ___ 
