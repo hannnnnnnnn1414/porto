@@ -163,7 +163,7 @@
     isGameOver = false;
     isGameWon = false;
     boss = null;
-    scoreBoard.textContent = "SCORE: 0";
+    scoreBoard.textContent = "SCORE: 0/200";
     rocketCanvas.style.position = "fixed";
     rocketCanvas.style.pointerEvents = "auto";
     r.x = window.innerWidth / 2;
@@ -398,6 +398,8 @@
             laserActive: false,
             laserDuration: 0,
             laserWarnTimer: 0,
+            isUltimate: false,
+            ultimateTimer: 0,
           };
         }
 
@@ -417,61 +419,157 @@
       }
 
       if (boss && !isGameOver && !isGameWon) {
-        if (boss.y < 150) {
-          boss.y += boss.vy;
-        } else {
-          boss.x += boss.vx;
+        if (!boss.isUltimate) {
+          // --- MODE NORMAL ---
+          if (boss.y < 150) {
+            boss.y += boss.vy;
+          } else {
+            boss.x += boss.vx;
+            if (
+              boss.x - boss.radius < 0 ||
+              boss.x + boss.radius > rocketCanvas.width
+            ) {
+              boss.vx *= -1;
+            }
+          }
+
+          boss.attackTimer++;
+
           if (
-            boss.x - boss.radius < 0 ||
-            boss.x + boss.radius > rocketCanvas.width
+            boss.attackTimer % 50 === 0 &&
+            !boss.laserActive &&
+            boss.laserWarnTimer <= 0
           ) {
-            boss.vx *= -1;
+            let baseAngle = Math.atan2(r.y - boss.y, r.x - boss.x);
+            for (let i = -2; i <= 2; i++) {
+              let angle = baseAngle + i * 0.25;
+              bossBullets.push({
+                x: boss.x,
+                y: boss.y + boss.radius * 0.5,
+                vx: Math.cos(angle) * 6,
+                vy: Math.sin(angle) * 6,
+              });
+            }
+          }
+
+          if (boss.attackTimer === 150) {
+            boss.laserWarnTimer = 40;
+            boss.vx = 0;
+          }
+
+          if (boss.laserWarnTimer > 0) {
+            boss.laserWarnTimer--;
+            if (boss.laserWarnTimer === 0) {
+              boss.laserActive = true;
+              boss.laserDuration = 50;
+            }
+          }
+
+          if (boss.laserActive) {
+            boss.laserDuration--;
+            if (boss.laserDuration <= 0) {
+              boss.laserActive = false;
+              boss.attackTimer = 0;
+              boss.vx = Math.random() > 0.5 ? 3 : -3;
+            }
+          }
+
+          let dist = Math.hypot(r.x - boss.x, r.y - boss.y);
+          if (dist < 12 + boss.radius * 0.8) {
+            isGameOver = true;
+          }
+        } else {
+          // --- MODE ULTIMATE KIAMAT ---
+          boss.ultimateTimer++;
+
+          if (boss.ultimateTimer > 120 && boss.ultimateTimer % 4 === 0) {
+            let spiralOffset1 = boss.ultimateTimer * 0.12;
+            let spiralOffset2 = -boss.ultimateTimer * 0.12;
+
+            for (let i = 0; i < 18; i++) {
+              let angle = spiralOffset1 + (i * (Math.PI * 2)) / 18;
+              bossBullets.push({
+                x: boss.x + Math.cos(angle) * (boss.radius * 0.8),
+                y: boss.y + Math.sin(angle) * (boss.radius * 0.8),
+                vx: Math.cos(angle) * 3.5,
+                vy: Math.sin(angle) * 3.5,
+              });
+            }
+
+            for (let i = 0; i < 18; i++) {
+              let angle = spiralOffset2 + (i * (Math.PI * 2)) / 18;
+              bossBullets.push({
+                x: boss.x + Math.cos(angle) * (boss.radius * 0.8),
+                y: boss.y + Math.sin(angle) * (boss.radius * 0.8),
+                vx: Math.cos(angle) * 3.5,
+                vy: Math.sin(angle) * 3.5,
+              });
+            }
+          }
+
+          let distToCore = Math.hypot(r.x - boss.x, r.y - boss.y);
+          if (distToCore < boss.radius * 0.8) {
+            isGameOver = true;
+          }
+
+          let portalX = rocketCanvas.width - 60;
+          let portalY = rocketCanvas.height - 60;
+          let portalDist = Math.hypot(r.x - portalX, r.y - portalY);
+
+          if (portalDist < 25 && boss.ultimateTimer > 120) {
+            createExplosion(boss.x, boss.y, "#ff3366");
+            createExplosion(boss.x + 30, boss.y - 20, "#ffc640");
+            createExplosion(boss.x - 30, boss.y + 20, "#ffffff");
+            createExplosion(portalX, portalY, "#c8b6ff");
+
+            boss = null;
+            isGameWon = true;
+            score += 1500;
+            scoreBoard.textContent = "SCORE: " + score;
           }
         }
 
-        boss.attackTimer++;
+        // --- DRAWING PORTAL RAHASIA ---
+        if (boss.isUltimate && boss.ultimateTimer > 60) {
+          let portalX = rocketCanvas.width - 60;
+          let portalY = rocketCanvas.height - 60;
+          let pRadius = 15 + Math.sin(boss.ultimateTimer * 0.1) * 4;
 
-        if (
-          boss.attackTimer % 50 === 0 &&
-          !boss.laserActive &&
-          boss.laserWarnTimer <= 0
-        ) {
-          let baseAngle = Math.atan2(r.y - boss.y, r.x - boss.x);
-          for (let i = -2; i <= 2; i++) {
-            let angle = baseAngle + i * 0.25;
-            bossBullets.push({
-              x: boss.x,
-              y: boss.y + boss.radius * 0.5,
-              vx: Math.cos(angle) * 6,
-              vy: Math.sin(angle) * 6,
-            });
-          }
+          rctx.save();
+          rctx.globalAlpha = 0.35 + Math.sin(boss.ultimateTimer * 0.05) * 0.15;
+
+          rctx.beginPath();
+          rctx.arc(portalX, portalY, pRadius, 0, Math.PI * 2);
+          rctx.fillStyle = "#1a1208";
+          rctx.fill();
+
+          rctx.strokeStyle = "#c8b6ff";
+          rctx.lineWidth = 1.5;
+          rctx.setLineDash([4, 4]);
+          rctx.stroke();
+
+          rctx.fillStyle = "#ffffff";
+          rctx.globalAlpha = 0.8;
+          rctx.fillRect(portalX - 4, portalY - 3, 1.5, 1.5);
+          rctx.fillRect(portalX + 5, portalY + 4, 1.5, 1.5);
+          rctx.fillRect(portalX - 2, portalY + 6, 1.5, 1.5);
+
+          rctx.restore();
         }
 
-        if (boss.attackTimer === 150) {
-          boss.laserWarnTimer = 40;
-          boss.vx = 0;
-        }
-
-        if (boss.laserWarnTimer > 0) {
-          boss.laserWarnTimer--;
-          if (boss.laserWarnTimer === 0) {
-            boss.laserActive = true;
-            boss.laserDuration = 50;
-          }
-        }
-
-        if (boss.laserActive) {
-          boss.laserDuration--;
-          if (boss.laserDuration <= 0) {
-            boss.laserActive = false;
-            boss.attackTimer = 0;
-            boss.vx = Math.random() > 0.5 ? 3 : -3;
-          }
-        }
-
+        // --- DRAWING BOS ---
         rctx.save();
         rctx.translate(boss.x, boss.y);
+
+        if (boss.isUltimate) {
+          rctx.translate((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
+
+          rctx.beginPath();
+          rctx.arc(0, 0, boss.radius, 0, Math.PI * 2);
+          rctx.fillStyle =
+            "rgba(255, 51, 102, " + (0.1 + Math.random() * 0.3) + ")";
+          rctx.fill();
+        }
 
         rctx.beginPath();
         rctx.moveTo(0, boss.radius);
@@ -566,11 +664,14 @@
 
         rctx.save();
         rctx.globalCompositeOperation = "lighter";
-        rctx.shadowBlur = 20;
-        rctx.shadowColor = "#ff3366";
 
         rctx.beginPath();
-        rctx.arc(bb.x, bb.y, 5, 0, Math.PI * 2);
+        rctx.arc(bb.x, bb.y, 9, 0, Math.PI * 2);
+        rctx.fillStyle = "rgba(255, 51, 102, 0.4)";
+        rctx.fill();
+
+        rctx.beginPath();
+        rctx.arc(bb.x, bb.y, 4, 0, Math.PI * 2);
         rctx.fillStyle = "#ff3366";
         rctx.fill();
 
@@ -694,21 +795,24 @@
         if (boss && !isGameOver && !isGameWon) {
           let dist = Math.hypot(b.x - boss.x, b.y - boss.y);
           if (dist < 2.5 + boss.radius) {
-            boss.hp -= 5;
+            if (!boss.isUltimate) {
+              boss.hp -= 5;
+              createExplosion(b.x, b.y, "#6affcb");
+              bullets.splice(i, 1);
+              hit = true;
 
-            createExplosion(b.x, b.y, "#6affcb");
-
-            bullets.splice(i, 1);
-            hit = true;
-            if (boss.hp <= 0) {
-              createExplosion(boss.x, boss.y, "#ff3366");
-              createExplosion(boss.x + 30, boss.y - 20, "#ffc640");
-              createExplosion(boss.x - 30, boss.y + 20, "#ffffff");
-
-              boss = null;
-              isGameWon = true;
-              score += 500;
-              scoreBoard.textContent = "SCORE: " + score;
+              if (boss.hp <= 0) {
+                boss.hp = 1;
+                boss.isUltimate = true;
+                boss.ultimateTimer = 0;
+                boss.vx = 0;
+                boss.laserActive = false;
+                boss.laserWarnTimer = 0;
+              }
+            } else {
+              createExplosion(b.x, b.y, "#ffffff");
+              bullets.splice(i, 1);
+              hit = true;
             }
             continue;
           }
@@ -1530,7 +1634,7 @@ window.triggerMoonExplosion = function () {
             heroInput.value = "";
             break;
           default:
-            heroInput.style.color = "var(--accent2)"; 
+            heroInput.style.color = "var(--accent2)";
             setTimeout(() => (heroInput.style.color = "var(--text)"), 500);
         }
 
