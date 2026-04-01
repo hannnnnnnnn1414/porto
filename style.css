@@ -619,7 +619,7 @@ h2 {
 .proj-card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 8px; 
+  border-radius: 8px;
   padding: 0;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -894,9 +894,15 @@ footer {
   filter: blur(0);
 }
 
-.reveal.delay-1 { transition-delay: 0.1s; }
-.reveal.delay-2 { transition-delay: 0.2s; }
-.reveal.delay-3 { transition-delay: 0.3s; }
+.reveal.delay-1 {
+  transition-delay: 0.1s;
+}
+.reveal.delay-2 {
+  transition-delay: 0.2s;
+}
+.reveal.delay-3 {
+  transition-delay: 0.3s;
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar {
@@ -1678,7 +1684,7 @@ body.light #joystickZone {
 }
 
 .terminal-path {
-  color: #ffffff; 
+  color: #ffffff;
   white-space: nowrap;
 }
 
@@ -1690,7 +1696,7 @@ body.light #joystickZone {
   font-size: 1rem;
   outline: none;
   width: 100%;
-  caret-color: var(--accent); 
+  caret-color: var(--accent);
 }
 
 @media (max-width: 768px) {
@@ -1698,5 +1704,55 @@ body.light #joystickZone {
     font-size: 0.85rem;
     flex-wrap: wrap;
     gap: 0.4rem;
+  }
+}
+
+/* =========================================
+   CUSTOM TERMINAL PLACEHOLDER
+   ========================================= */
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: var(--mono);
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  caret-color: var(--accent);
+  position: relative;
+  z-index: 2;
+}
+
+.terminal-suggestion {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.2s ease;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.terminal-suggestion .highlight {
+  color: var(--accent3);
+  font-weight: 700;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .terminal-suggestion {
+    font-size: 0.8rem;
   }
 }

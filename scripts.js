@@ -1811,20 +1811,102 @@ window.triggerMoonExplosion = function () {
       switch (mainCmd) {
         case "help":
           printToTerminal("Available commands:");
-          printToTerminal("  whoami   - Display current user information");
-          printToTerminal("  skills   - List technical stack & languages");
-          printToTerminal("  projects - Show current active deployments");
-          printToTerminal("  contact  - Retrieve communication links");
-          printToTerminal("  cv       - Download my resume / CV");
-          printToTerminal("  github   - Open my GitHub profile");
-          printToTerminal("  linkedin - Open my LinkedIn profile");
-          printToTerminal("  instagram- Open my Instagram profile");
-          printToTerminal("  clear    - Clear the terminal screen");
-          printToTerminal("  exit     - Terminate session");
+          printToTerminal("  whoami     - Display current user information");
+          printToTerminal("  skills     - List technical stack & languages");
+          printToTerminal("  experience - Show professional timeline");
+          printToTerminal("  status     - Check current availability");
+          printToTerminal("  projects   - Show current active deployments");
+          printToTerminal("  project    - View details (e.g., project ocr, project budget)");
+          printToTerminal("  contact    - Retrieve communication links");
+          printToTerminal("  email      - Send an email to me directly");
+          printToTerminal("  cv         - Download my resume / CV");
+          printToTerminal("  github     - Open my GitHub profile");
+          printToTerminal("  linkedin   - Open my LinkedIn profile");
+          printToTerminal("  clear      - Clear the terminal screen");
+          printToTerminal("  exit       - Terminate session");
           printToTerminal("--------------------------------------------------");
-          printToTerminal(
-            "Try standard dev commands too! (git, npm, php, ping, rm, matrix, buff, neofetch, analyze-site)",
-          );
+          break;
+
+        case "experience":
+        case "exp":
+          printToTerminal("<span style='color: #ffc640;'>[Jan 2025 - Present (1 yr 4 mos)]</span> Full Stack Developer Intern @ PT Kayaba Indonesia", true);
+          printToTerminal("Location : Cikarang Barat, Jawa Barat, Indonesia (On-site)");
+          printToTerminal("Role     : Contributed to the development and enhancement of internal web-based systems using Laravel, Bootstrap, HTML, CSS, JS, and MySQL.");
+          printToTerminal("           Translated business requirements into system workflows, handled troubleshooting, and managed version control using Git.");
+          printToTerminal("--------------------------------------------------");
+          printToTerminal("<span style='color: #ffc640;'>[2022 - Present]</span> Information Systems Student @ Politeknik STMI Jakarta", true);
+          break;
+
+        case "status":
+          printToTerminal("Current Phase : 8th Semester Student & Full Stack Dev Intern");
+          printToTerminal("Availability  : Open for full-time opportunities and interesting collaborations.");
+          printToTerminal("Location      : Jakarta, Indonesia");
+          break;
+
+        case "email":
+          printToTerminal("Opening default mail client...");
+          printToTerminal("Initiating secure connection to haniffathurrahmanrustanto@gmail.com");
+          setTimeout(() => {
+            window.location.href = "mailto:haniffathurrahmanrustanto@gmail.com";
+          }, 800);
+          break;
+
+        case "project":
+          const projName = args[1] ? args[1].toLowerCase() : "";
+          
+          if (projName === "ocr") {
+            printToTerminal("<span style='color: #6affcb;'>[Stock Opname OCR Monitoring System]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS, Verihubs OCR API");
+            printToTerminal("Desc : Internal system to streamline stock opname by automating data extraction.");
+            printToTerminal("  > Developed data extraction system integrating Verihubs OCR API.");
+            printToTerminal("  > Built a verification dashboard for real-time extraction monitoring.");
+            printToTerminal("  > Improved input efficiency by significantly reducing manual data entry.");
+          } else if (projName === "recruitment") {
+            printToTerminal("<span style='color: #6affcb;'>[Recruitment System Enhancement]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS, Verihubs OCR API");
+            printToTerminal("Desc : System enhancement to accelerate selection and secure applicant documents.");
+            printToTerminal("  > Enhanced security by implementing sensitive data encryption for applicant documents.");
+            printToTerminal("  > Integrated Verihubs OCR API for automatic verification of KTP and diplomas.");
+            printToTerminal("  > Assisted HR in accelerating document validation and minimizing input errors.");
+          } else if (projName === "budget") {
+            printToTerminal("<span style='color: #6affcb;'>[Digitalized Master Budget System]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS");
+            printToTerminal("Desc : Web-based budget submission system replacing manual Excel workflows.");
+            printToTerminal("  > Developed a web-based system to replace manual Excel-based budget processes.");
+            printToTerminal("  > Implemented document import/export features using supporting libraries.");
+            printToTerminal("  > Applied a structured multi-level approval workflow (Staff to Kadept).");
+            printToTerminal("  > Accelerated budget preparation from months to just a few days.");
+          } else if (projName === "monitoring" || projName === "supplier") {
+            printToTerminal("<span style='color: #6affcb;'>[Stock Monitoring System (Dashboard & API)]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS, RESTful API");
+            printToTerminal("Desc : End-to-end stock monitoring system with internal dashboard and supplier API.");
+            printToTerminal("  > Developed dashboard to monitor stock levels, trends, and real-time discrepancies.");
+            printToTerminal("  > Built RESTful API enabling suppliers to securely push and pull stock data.");
+            printToTerminal("  > Implemented manual input and Excel import/export for operational flexibility.");
+            printToTerminal("  > Improved data accuracy and synchronization between internal and supplier systems.");
+            printToTerminal("  > Supported multi-supplier integration with consistent endpoint management.");
+          } else if (projName === "employee" || projName === "hr") {
+            printToTerminal("<span style='color: #6affcb;'>[Employee Performance Assessment System]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS");
+            printToTerminal("Desc : Digital assessment system for HR to monitor employee performance.");
+            printToTerminal("  > Developed a summary dashboard for performance and behavior evaluation.");
+            printToTerminal("  > Implemented a multi-criteria scoring system for objective measurement.");
+            printToTerminal("  > Supported manual input and Excel import/export to accelerate workflow.");
+            printToTerminal("  > Reduced reliance on document-based processes, improving evaluation efficiency.");
+            printToTerminal("  > Ensured data security and consistency through validation and access control.");
+          } else if (projName === "document" || projName === "qms") {
+            printToTerminal("<span style='color: #6affcb;'>[Document Control System]</span>", true);
+            printToTerminal("Stack: Laravel, MySQL, Bootstrap, HTML/CSS/JS");
+            printToTerminal("Desc : Web-based QMS document management with structured approval workflow.");
+            printToTerminal("  > Developed a structured workflow for document upload, review, approval, and distribution.");
+            printToTerminal("  > Applied QMS review mechanisms to ensure company quality standards are met.");
+            printToTerminal("  > Implemented cross-departmental access features based on operational roles.");
+            printToTerminal("  > Enhanced document accuracy and traceability through centralized storage.");
+            printToTerminal("  > Streamlined document distribution via automated delivery and notifications.");
+          } else {
+            printToTerminal("Usage: project [name]");
+            printToTerminal("Available options: ocr, recruitment, budget, monitoring, employee, document");
+          }
           break;
         case "whoami":
           printToTerminal("Name   : Hanif Fathurrahman Rustanto");
@@ -2123,3 +2205,19 @@ window.triggerMoonExplosion = function () {
     }
   }
 })();
+
+// =========================================
+// TERMINAL SUGGESTION FADE EFFECT
+// =========================================
+const heroInput = document.getElementById("heroTerminalInput");
+const suggestion = document.getElementById("terminalSuggestion");
+
+if (heroInput && suggestion) {
+  heroInput.addEventListener("input", function() {
+    if (this.value.length > 0) {
+      suggestion.style.opacity = "0";
+    } else {
+      suggestion.style.opacity = "0.7";
+    }
+  });
+}
