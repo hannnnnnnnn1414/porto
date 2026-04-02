@@ -1965,6 +1965,18 @@ window.triggerMoonExplosion = function () {
           printToTerminal("Opening Instagram...");
           window.open("https://www.instagram.com/haniv_fr", "_blank");
           break;
+        case "eca":
+          printToTerminal("Opening Eca...");
+          window.open("https://raisakmal.vercel.app/", "_blank");
+          break;
+        case "gleam":
+          printToTerminal("Opening Gleam...");
+          window.open("https://www.gleam.web.id/", "_blank");
+          break;
+        case "sawung":
+          printToTerminal("Opening Sawung...");
+          window.open("https://urat-waras.vercel.app/", "_blank");
+          break;
         case "rm":
           if (args[1] === "-rf") {
             printToTerminal(
