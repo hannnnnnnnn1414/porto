@@ -251,6 +251,12 @@
     trail: [],
   };
 
+  const rocketBodyPath = new Path2D(
+    "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z",
+  );
+  const leftWingPath = new Path2D("M-9,10 L-18,20 L-9,18 Z");
+  const rightWingPath = new Path2D("M9,10 L18,20 L9,18 Z");
+
   function drawRocket(ctx, x, y, angle, scale) {
     const isLight = document.body.classList.contains("light");
     ctx.save();
@@ -258,15 +264,14 @@
     ctx.rotate(angle + Math.PI / 2);
     ctx.scale(scale, scale);
     ctx.globalAlpha = 1;
+
     ctx.fillStyle = isLight ? "#c7580a" : "#ffffff";
-    ctx.fill(
-      new Path2D(
-        "M0,-25 C-8,-20 -9,-10 -9,0 L-9,15 Q0,20 9,15 L9,0 C9,-10 8,-20 0,-25 Z",
-      ),
-    );
+    ctx.fill(rocketBodyPath);
+
     ctx.fillStyle = isLight ? "#e07b3a" : "#c8b6ff";
-    ctx.fill(new Path2D("M-9,10 L-18,20 L-9,18 Z"));
-    ctx.fill(new Path2D("M9,10 L18,20 L9,18 Z"));
+    ctx.fill(leftWingPath);
+    ctx.fill(rightWingPath);
+
     ctx.globalAlpha = 0.7 + Math.random() * 0.3;
     ctx.fillStyle = isLight ? "#f5a623" : "#fff";
     const flen = 12 + Math.random() * 10;
@@ -285,6 +290,7 @@
   }
 
   function createExplosion(x, y, color) {
+    if (particles.length > 100) return;
     for (let i = 0; i < 15; i++) {
       particles.push({
         x: x,
@@ -745,14 +751,10 @@
         rctx.rotate(angle);
 
         rctx.globalCompositeOperation = "lighter";
-        rctx.shadowBlur = 15;
-        rctx.shadowColor = "#39ff14";
+        rctx.fillRect(-12, -6, 24, 12);
 
         rctx.fillStyle = "#ffffff";
         rctx.fillRect(-8, -2, 16, 4);
-
-        rctx.fillStyle = "rgba(57, 255, 20, 0.5)";
-        rctx.fillRect(-10, -4, 20, 8);
 
         rctx.restore();
 
@@ -1430,7 +1432,7 @@ window.triggerMoonExplosion = function () {
 //       font-family: var(--mono); font-size: 0.85rem; color: var(--accent); font-weight: bold;
 //     }
 //     .chatbot-header span { display: flex; align-items: center; gap: 8px; }
-//     .chatbot-header span::before { content: ''; display: block; width: 8px; height: 8px; background: #39ff14; border-radius: 50%; box-shadow: 0 0 5px #39ff14; }
+//     .chatbot-header span::before { content: ''; display: block; width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 5px #ffffff; }
 //     .chatbot-close { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; line-height: 1; }
 
 //     .chatbot-messages {
@@ -1700,7 +1702,7 @@ window.triggerMoonExplosion = function () {
 
   console.log(
     "%cHello there, curious dev! 🕵️‍♂️",
-    "color: #39ff14; font-size: 20px; font-weight: bold; background: #1a1208; padding: 10px; border-radius: 5px;",
+    "color: #ffffff; font-size: 20px; font-weight: bold; background: #1a1208; padding: 10px; border-radius: 5px;",
   );
   console.log(
     "%cLooking under the hood? Try typing 'sudo' anywhere on the page, or hit Ctrl + ` to access the mainframe.",
@@ -1717,7 +1719,7 @@ window.triggerMoonExplosion = function () {
     termContainer.style.cssText = `
       position: fixed; inset: 0; z-index: 99999; background: rgba(10, 10, 15, 0.98);
       backdrop-filter: blur(10px); display: flex; flex-direction: column;
-      padding: 2rem; font-family: 'Space Mono', monospace; color: #39ff14;
+      padding: 2rem; font-family: 'Space Mono', monospace; color: #ffffff;
       overflow-y: auto; font-size: 0.95rem; line-height: 1.6;
     `;
 
@@ -1733,12 +1735,12 @@ window.triggerMoonExplosion = function () {
     const promptStr = "hfr@dev:~$";
     const promptEl = document.createElement("span");
     promptEl.textContent = promptStr;
-    promptEl.style.color = "#ff3366";
+    promptEl.style.color = "#ffffff";
 
     const inputEl = document.createElement("input");
     inputEl.type = "text";
     inputEl.style.cssText = `
-      flex: 1; background: transparent; border: none; color: #39ff14;
+      flex: 1; background: transparent; border: none; color: #ffffff;
       font-family: 'Space Mono', monospace; font-size: 0.95rem; outline: none;
     `;
     inputEl.autocomplete = "off";
@@ -2165,7 +2167,7 @@ window.triggerMoonExplosion = function () {
         case "npm":
           if (args[1] === "run" && args[2] === "dev") {
             printToTerminal(
-              "<span style='color: #39ff14;'>  VITE v4.3.9</span> ready in 345 ms",
+              "<span style='color: #ffffff;'>  VITE v4.3.9</span> ready in 345 ms",
               true,
             );
           } else {
@@ -2175,7 +2177,7 @@ window.triggerMoonExplosion = function () {
         case "php":
           if (args[1] === "artisan" && args[2] === "serve") {
             printToTerminal(
-              "<span style='color: #39ff14;'>INFO</span> Server running on [http://127.0.0.1:8000].",
+              "<span style='color: #ffffff;'>INFO</span> Server running on [http://127.0.0.1:8000].",
               true,
             );
           } else {
@@ -2196,21 +2198,21 @@ window.triggerMoonExplosion = function () {
           setTimeout(
             () =>
               printToTerminal(
-                "<span style='color: #39ff14;'>[SCANNING]</span> DOM Elements... 142 detected.",
+                "<span style='color: #ffffff;'>[SCANNING]</span> DOM Elements... 142 detected.",
               ),
             600,
           );
           setTimeout(
             () =>
               printToTerminal(
-                "<span style='color: #39ff14;'>[CHECKING]</span> Tech Stack... Frontend optimized. Canvas active.",
+                "<span style='color: #ffffff;'>[CHECKING]</span> Tech Stack... Frontend optimized. Canvas active.",
               ),
             1400,
           );
           setTimeout(
             () =>
               printToTerminal(
-                "<span style='color: #39ff14;'>[VERIFYING]</span> Backend Architecture... TypeScript/Express endpoints validated.",
+                "<span style='color: #ffffff;'>[VERIFYING]</span> Backend Architecture... TypeScript/Express endpoints validated.",
               ),
             2200,
           );
@@ -2251,7 +2253,7 @@ window.triggerMoonExplosion = function () {
           if (args[1] === "--skills") {
             window.rocketBuffActive = true;
             printToTerminal(
-              "<span style='color: #39ff14;'>[BUFF APPLIED]</span> Weapon systems upgraded. Triple-shot engaged!",
+              "<span style='color: #ffffff;'>[BUFF APPLIED]</span> Weapon systems upgraded. Triple-shot engaged!",
             );
             printToTerminal(
               "Try clicking on the screen outside the terminal now.",
@@ -2263,7 +2265,7 @@ window.triggerMoonExplosion = function () {
 
         case "neofetch":
           const asciiArt = `
-<pre style='color: #39ff14; margin: 0; font-family: inherit; line-height: 1.2;'>
+<pre style='color: #ffffff; margin: 0; font-family: inherit; line-height: 1.2;'>
    __   __  _____  ___ 
   / / / / / ___/ / _ \\
  / /_/ / / __/  / , _/
