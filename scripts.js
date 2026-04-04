@@ -1189,21 +1189,21 @@ document.querySelectorAll("a,button,.proj-card,.skill-chip").forEach((el) => {
   el.addEventListener("mouseleave", () => ring.classList.remove("hovered"));
 });
 
-// THEME
-function syncLabels(isLight) {
-  const icon = isLight ? "☀️" : "🌙",
-    label = isLight ? "dark" : "light";
-  document.getElementById("themeToggle").textContent = `${icon} ${label}`;
-  document.getElementById("themeToggleMobile").textContent = `${icon} ${label}`;
-}
-function toggleTheme() {
-  document.body.classList.toggle("light");
-  syncLabels(document.body.classList.contains("light"));
-}
-document.getElementById("themeToggle").addEventListener("click", toggleTheme);
-document
-  .getElementById("themeToggleMobile")
-  .addEventListener("click", toggleTheme);
+// // THEME
+// function syncLabels(isLight) {
+//   const icon = isLight ? "☀️" : "🌙",
+//     label = isLight ? "dark" : "light";
+//   document.getElementById("themeToggle").textContent = `${icon} ${label}`;
+//   document.getElementById("themeToggleMobile").textContent = `${icon} ${label}`;
+// }
+// function toggleTheme() {
+//   document.body.classList.toggle("light");
+//   syncLabels(document.body.classList.contains("light"));
+// }
+// document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+// document
+//   .getElementById("themeToggleMobile")
+//   .addEventListener("click", toggleTheme);
 
 // TYPING
 const typingTarget = document.getElementById("typingTarget");
