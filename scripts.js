@@ -669,7 +669,7 @@
         bb.y += bb.vy;
 
         rctx.save();
-        rctx.globalCompositeOperation = "lighter";
+        
 
         rctx.beginPath();
         rctx.arc(bb.x, bb.y, 9, 0, Math.PI * 2);
@@ -750,7 +750,7 @@
         rctx.translate(b.x, b.y);
         rctx.rotate(angle);
 
-        rctx.globalCompositeOperation = "lighter";
+        
         rctx.fillRect(-12, -6, 24, 12);
 
         rctx.fillStyle = "#ffffff";
@@ -885,7 +885,7 @@
         rctx.translate(eb.x, eb.y);
         rctx.rotate(angle);
 
-        rctx.globalCompositeOperation = "lighter";
+        
         rctx.shadowBlur = 15;
         rctx.shadowColor = "#ff3366";
 
@@ -1112,6 +1112,10 @@ function initStars() {
 }
 initStars();
 function drawStars() {
+  if (typeof isGameMode !== 'undefined' && isGameMode) {
+    requestAnimationFrame(drawStars);
+    return;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const isLight = document.body.classList.contains("light");
   stars.forEach((s) => {
@@ -1660,22 +1664,22 @@ window.triggerMoonExplosion = function () {
     terminalBtn.addEventListener("click", openTerminal);
   }
 
-  if (heroTitle) {
-    heroTitle.style.cursor = "pointer";
-    heroTitle.title = "Click me 5 times...";
-    heroTitle.addEventListener("click", () => {
-      tapCount++;
-      clearTimeout(tapTimer);
-      if (tapCount >= 5) {
-        openTerminal();
-        tapCount = 0;
-      } else {
-        tapTimer = setTimeout(() => {
-          tapCount = 0;
-        }, 400);
-      }
-    });
-  }
+  // if (heroTitle) {
+  //   heroTitle.style.cursor = "pointer";
+  //   heroTitle.title = "Click me 5 times...";
+  //   heroTitle.addEventListener("click", () => {
+  //     tapCount++;
+  //     clearTimeout(tapTimer);
+  //     if (tapCount >= 5) {
+  //       openTerminal();
+  //       tapCount = 0;
+  //     } else {
+  //       tapTimer = setTimeout(() => {
+  //         tapCount = 0;
+  //       }, 400);
+  //     }
+  //   });
+  // }
 
   document.addEventListener("keydown", (e) => {
     if (
