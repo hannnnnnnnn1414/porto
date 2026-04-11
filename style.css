@@ -267,8 +267,6 @@ h1 .line2 {
   margin-top: 5rem;
   font-family: var(--mono);
   font-size: 0.7rem;
-  /* color: var(--muted);
-   */
   color: var(--accent3);
   letter-spacing: 0.1em;
   display: flex;
@@ -1755,4 +1753,142 @@ body.light #joystickZone {
   .terminal-suggestion {
     font-size: 0.8rem;
   }
+}
+
+/* =========================================
+   PROJECTS LIST (INDEX PAGE) - CLEAN & DIMMED
+========================================= */
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+
+  color: var(--muted);
+  opacity: 0.7;
+
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proj-list-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proj-num {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  opacity: 0.5;
+  transition: opacity 0.5s ease;
+}
+
+.proj-title-text {
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proj-list-right {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.6;
+}
+
+/* =========================================
+   HOVER LOGIC
+========================================= */
+
+.projects-list:hover .project-list-item {
+  opacity: 0.2;
+}
+
+.projects-list .project-list-item:hover {
+  opacity: 1;
+  color: var(--text);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(15px);
+}
+
+.project-list-item:hover .proj-title-text {
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.project-list-item:hover .proj-num {
+  opacity: 1;
+}
+
+.project-list-item:hover .proj-list-right {
+  transform: translateX(-15px);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .project-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    opacity: 0.9;
+  }
+
+  .projects-list:hover .project-list-item {
+    opacity: 0.9;
+  }
+
+  .projects-list .project-list-item:hover {
+    opacity: 1;
+    transform: none;
+  }
+
+  .project-list-item:hover .proj-list-right {
+    transform: none;
+  }
+}
+
+.proj-list-right .skill-text {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.proj-list-right .skill-text .cat {
+  font-size: 0.65rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.proj-list-right .skill-text .tech {
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+}
+
+.projects-list .project-list-item:hover .skill-text {
+  opacity: 1;
+  transform: translateY(-3px);
+  color: var(--text);
+}
+
+.projects-list .project-list-item:hover .skill-text .cat {
+  opacity: 1;
 }
