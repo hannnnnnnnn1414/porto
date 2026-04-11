@@ -2378,28 +2378,55 @@ const toggleBtn = document.getElementById("musicToggle");
 const musicIcon = document.getElementById("musicIcon");
 
 music.volume = 0.3;
+
 let isPlaying = false;
 
-function initAudio() {
-  let playPromise = music.play();
+function tryAutoplay() {
+  const playPromise = music.play();
 
   if (playPromise !== undefined) {
     playPromise
-      .then((_) => {
+      .then(() => {
         isPlaying = true;
-        musicIcon.classList.remove("paused");
         musicIcon.classList.add("playing");
+        musicIcon.classList.remove("paused");
       })
-      .catch((error) => {
-        console.log("Autoplay diblokir browser, nunggu interaksi user.");
+      .catch(() => {
         isPlaying = false;
-        musicIcon.classList.remove("playing");
         musicIcon.classList.add("paused");
+        musicIcon.classList.remove("playing");
       });
   }
 }
 
-window.addEventListener("load", initAudio);
+window.addEventListener("load", () => {
+  tryAutoplay();
+});
+
+document.addEventListener(
+  "click",
+  () => {
+    if (!isPlaying) {
+      music
+        .play()
+        .then(() => {
+          isPlaying = true;
+          musicIcon.classList.add("playing");
+          musicIcon.classList.remove("paused");
+        })
+        .catch(() => {});
+    }
+  },
+  { once: true },
+);
+
+document.addEventListener(
+  "keydown",
+  () => {
+    if (!isPlaying) tryAutoplay();
+  },
+  { once: true },
+);
 
 toggleBtn.addEventListener("click", () => {
   if (isPlaying) {
