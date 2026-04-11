@@ -669,7 +669,6 @@
         bb.y += bb.vy;
 
         rctx.save();
-        
 
         rctx.beginPath();
         rctx.arc(bb.x, bb.y, 9, 0, Math.PI * 2);
@@ -750,7 +749,6 @@
         rctx.translate(b.x, b.y);
         rctx.rotate(angle);
 
-        
         rctx.fillRect(-12, -6, 24, 12);
 
         rctx.fillStyle = "#ffffff";
@@ -885,7 +883,6 @@
         rctx.translate(eb.x, eb.y);
         rctx.rotate(angle);
 
-        
         rctx.shadowBlur = 15;
         rctx.shadowColor = "#ff3366";
 
@@ -1112,7 +1109,7 @@ function initStars() {
 }
 initStars();
 function drawStars() {
-  if (typeof isGameMode !== 'undefined' && isGameMode) {
+  if (typeof isGameMode !== "undefined" && isGameMode) {
     requestAnimationFrame(drawStars);
     return;
   }
@@ -2375,3 +2372,44 @@ if (heroInput && suggestion) {
     }
   });
 }
+
+const music = document.getElementById("bgMusic");
+const toggleBtn = document.getElementById("musicToggle");
+const musicIcon = document.getElementById("musicIcon");
+
+music.volume = 0.3;
+let isPlaying = false;
+
+function initAudio() {
+  let playPromise = music.play();
+
+  if (playPromise !== undefined) {
+    playPromise
+      .then((_) => {
+        isPlaying = true;
+        musicIcon.classList.remove("paused");
+        musicIcon.classList.add("playing");
+      })
+      .catch((error) => {
+        console.log("Autoplay diblokir browser, nunggu interaksi user.");
+        isPlaying = false;
+        musicIcon.classList.remove("playing");
+        musicIcon.classList.add("paused");
+      });
+  }
+}
+
+window.addEventListener("load", initAudio);
+
+toggleBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    music.pause();
+    musicIcon.classList.remove("playing");
+    musicIcon.classList.add("paused");
+  } else {
+    music.play();
+    musicIcon.classList.remove("paused");
+    musicIcon.classList.add("playing");
+  }
+  isPlaying = !isPlaying;
+});
