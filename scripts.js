@@ -2099,7 +2099,7 @@ window.triggerMoonExplosion = function () {
             "_blank",
           );
           break;
-          case "spotify":
+        case "spotify":
           printToTerminal("Opening Spotify...");
           window.open(
             "https://open.spotify.com/user/31as2gyqrbpx4yjkd5yf52x63hqm",
@@ -2122,6 +2122,10 @@ window.triggerMoonExplosion = function () {
         case "sawung":
           printToTerminal("Opening Sawung...");
           window.open("https://urat-waras.vercel.app/", "_blank");
+          break;
+        case "faiq":
+          printToTerminal("Opening Faiq...");
+          window.open("https://faiqam.vercel.app/", "_blank");
           break;
         case "rm":
           if (args[1] === "-rf") {
