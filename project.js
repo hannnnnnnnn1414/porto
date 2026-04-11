@@ -2,7 +2,7 @@ const projectsData = {
   ocr: {
     company: "PT KAYABA INDONESIA",
     title: "Stock Opname OCR Monitoring System",
-    stack: ["Laravel", "MySQL", "Bootstrap", "Verihubs OCR API"],
+    stack: ["Laravel", "MySQL", "Bootstrap", "OCR API"],
     desc: "An internal system designed to streamline the stock opname process by automating data extraction from physical documents using Optical Character Recognition (OCR) and presenting the results through a real-time monitoring dashboard.",
     images: [],
     body: `
@@ -18,7 +18,7 @@ const projectsData = {
   budget: {
     company: "PT KAYABA INDONESIA",
     title: "Digitalized Master Budget System",
-    stack: ["Laravel", "MySQL", "Bootstrap", "Excel Export/Import"],
+    stack: ["Laravel", "MySQL", "Bootstrap"],
     desc: "A web-based budget submission system designed to replace manual Excel-based processes, enabling faster, more structured, and easily monitored budget planning and approval workflows.",
     images: [],
     body: `
@@ -35,23 +35,25 @@ const projectsData = {
   assessment: {
     company: "PT KAYABA INDONESIA",
     title: "Employee Performance Assessment System",
-    stack: ["Laravel", "MySQL", "Bootstrap", "HTML/CSS/JS"],
-    desc: "A digital employee performance assessment system featuring an internal dashboard for summarizing employee performance and behavior, with support for manual input and Excel import/export.",
+    stack: ["Laravel", "MySQL", "Bootstrap"],
+    desc: "A digital employee performance assessment system providing an internal dashboard for HR and management to structurally monitor employee performance and behavior.",
     images: [],
     body: `
       <p>A centralized platform to effectively track, evaluate, and summarize employee metrics.</p>
       <h3>Key Features:</h3>
       <ul>
-        <li>Developed a dashboard for HR and management to provide summarized employee performance and behavior metrics.</li>
-        <li>Implemented multi-criteria evaluation to assess employee performance and behavior.</li>
-        <li>Supported manual input by system users and assessment data import/export via Excel to streamline evaluation workflows.</li>
+        <li>Developed a summary dashboard for employee performance and behavior to assist HR and management in the evaluation process.</li>
+        <li>Implemented a multi-criteria assessment system to objectively measure performance, discipline, and work behavior.</li>
+        <li>Supported manual input by system users as well as import/export of assessment data via Excel to speed up the evaluation workflow.</li>
+        <li>Improved evaluation process efficiency and reduced reliance on manual document-based processes.</li>
+        <li>Ensured security and consistency of assessment data through system validation and access rights control.</li>
       </ul>
     `,
   },
   recruitment: {
     company: "PT KAYABA INDONESIA",
     title: "Recruitment System Enhancement",
-    stack: ["Laravel", "MySQL", "Data Encryption", "OCR Verification"],
+    stack: ["MySQL", "Data Encryption", "OCR Verification"],
     desc: "An enhancement to the company’s recruitment system aimed at accelerating the candidate screening process and improving document security through automated verification and data encryption.",
     images: [],
     body: `
@@ -78,6 +80,24 @@ const projectsData = {
         <li>Developed RESTful API to enable supplier systems to push and pull stock data securely.</li>
         <li>Supported manual input within the system and import/export of stock data via Excel.</li>
         <li>Streamlined stock synchronization and improved accuracy of internal and supplier data exchange.</li>
+      </ul>
+    `,
+  },
+  documentControl: {
+    company: "PT KAYABA INDONESIA",
+    title: "Document Control System",
+    stack: ["Laravel", "MySQL", "Bootstrap"],
+    desc: "A web-based document management system allowing each department to upload documents for review and approval by the Quality Management System (QMS) Department before distribution.",
+    images: [],
+    body: `
+      <p>A centralized system to manage the upload, review, approval, and distribution of internal company documents.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Developed a document management system to structure the workflow of upload, review, approval, and distribution.</li>
+        <li>Implemented a review and approval mechanism by the QMS Department to ensure documents meet company quality standards.</li>
+        <li>Implemented cross-departmental document access features tailored to specific access rights and operational needs.</li>
+        <li>Improved accuracy and document traceability through centralized storage and consistent document control workflows.</li>
+        <li>Streamlined the document distribution process through an automated delivery system and internal notifications.</li>
       </ul>
     `,
   },
