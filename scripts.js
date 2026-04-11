@@ -2099,6 +2099,13 @@ window.triggerMoonExplosion = function () {
             "_blank",
           );
           break;
+          case "spotify":
+          printToTerminal("Opening Spotify...");
+          window.open(
+            "https://open.spotify.com/user/31as2gyqrbpx4yjkd5yf52x63hqm",
+            "_blank",
+          );
+          break;
         case "instagram":
         case "ig":
           printToTerminal("Opening Instagram...");
