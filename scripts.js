@@ -1826,6 +1826,7 @@ window.triggerMoonExplosion = function () {
           printToTerminal("  email      - Send an email to me directly");
           printToTerminal("  cv         - Download my resume / CV");
           printToTerminal("  github     - Open my GitHub profile");
+          printToTerminal("  spotify     - Open my Spotify profile");
           printToTerminal("  linkedin   - Open my LinkedIn profile");
           printToTerminal("  Instagram   - Open my Instagram");
           printToTerminal("  clear      - Clear the terminal screen");
