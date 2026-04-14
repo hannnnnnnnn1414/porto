@@ -1,5 +1,6 @@
 const projectsData = {
   ocr: {
+    role: "Full Stack Developer",
     company: "PT KAYABA INDONESIA",
     title: "Stock Opname OCR Monitoring System",
     stack: ["Laravel", "MySQL", "Bootstrap", "OCR API"],
@@ -16,6 +17,7 @@ const projectsData = {
     `,
   },
   budget: {
+    role: "Full Stack Developer",
     company: "PT KAYABA INDONESIA",
     title: "Digitalized Master Budget System",
     stack: ["Laravel", "MySQL", "Bootstrap"],
@@ -33,6 +35,7 @@ const projectsData = {
     `,
   },
   assessment: {
+    role: "Full Stack Developer",
     company: "PT KAYABA INDONESIA",
     title: "Employee Performance Assessment System",
     stack: ["Laravel", "MySQL", "Bootstrap"],
@@ -51,6 +54,7 @@ const projectsData = {
     `,
   },
   recruitment: {
+    role: "Backend Developer",
     company: "PT KAYABA INDONESIA",
     title: "Recruitment System Enhancement",
     stack: ["MySQL", "Data Encryption", "OCR Verification"],
@@ -67,6 +71,7 @@ const projectsData = {
     `,
   },
   monitoring: {
+    role: "Backend Developer",
     company: "PT KAYABA INDONESIA",
     title: "Stock Monitoring System",
     stack: ["Laravel", "MySQL", "RESTful API", "Bootstrap"],
@@ -84,7 +89,8 @@ const projectsData = {
     `,
   },
   documentControl: {
-    company: "PT KAYABA INDONESIA",
+    role: "Full Stack Developer",
+    company: "External Projects",
     title: "Document Control System",
     stack: ["Laravel", "MySQL", "Bootstrap"],
     desc: "A web-based document management system allowing each department to upload documents for review and approval by the Quality Management System (QMS) Department before distribution.",
@@ -98,6 +104,24 @@ const projectsData = {
         <li>Implemented cross-departmental document access features tailored to specific access rights and operational needs.</li>
         <li>Improved accuracy and document traceability through centralized storage and consistent document control workflows.</li>
         <li>Streamlined the document distribution process through an automated delivery system and internal notifications.</li>
+      </ul>
+    `,
+  },
+  waTracker: {
+    role: "Backend Developer",
+    company: "External Projects",
+    title: "Headless WhatsApp Tracking Middleware",
+    stack: ["Node.js", "Express", "RESTful API", "Webhooks"],
+    desc: "A headless middleware service built to monitor and sync WhatsApp conversations between sales teams and customers directly into a central Laravel CRM.",
+    images: [],
+    body: `
+      <p>A microservice acting as a bridge between WhatsApp WebSockets and a Laravel Customer Relationship Management System to track sales interactions in real-time.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Developed a headless WhatsApp client using Node.js, Express, and the Baileys library.</li>
+        <li>Implemented real-time message listening and forwarded incoming/outgoing chats via webhooks to a central Laravel API.</li>
+        <li>Engineered an in-memory session management system to handle multiple active WhatsApp instances and QR code logins.</li>
+        <li>Ensured seamless connection stability with auto-reconnect handling and session cleanup mechanisms.</li>
       </ul>
     `,
   },
@@ -118,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("detail-company").textContent = data.company;
     document.getElementById("detail-title").textContent = data.title;
     document.getElementById("detail-desc").textContent = data.desc;
+    document.getElementById("detail-role").textContent = data.role;
 
     let sliderHTML = "";
     if (data.images && data.images.length > 0) {
