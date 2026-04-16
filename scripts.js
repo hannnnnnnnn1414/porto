@@ -2083,8 +2083,8 @@ window.triggerMoonExplosion = function () {
         case "cv":
           printToTerminal("Downloading CV/Resume...");
           const link = document.createElement("a");
-          link.href = "Hanif_Fathurrahman_CV.pdf";
-          link.download = "Hanif_Fathurrahman_CV.pdf";
+          link.href = "CV Hanif Fathurrahman.pdf";
+          link.download = "CV Hanif Fathurrahman.pdf";
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
