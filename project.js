@@ -47,7 +47,6 @@ const projectsData = {
       <ul>
         <li>Developed a centralized Single Sign-On (SSO) gateway using Next.js and NextAuth.js to eliminate redundant logins across multiple internal applications.</li>
         <li>Engineered a dynamic application launcher with a clean, corporate Soft UI design aesthetic to improve user experience.</li>
-        <li>Implemented a global command palette (Ctrl + K shortcut) for instant application search and rapid navigation.</li>
         <li>Secured client-side routes and managed user sessions efficiently using JSON Web Tokens (JWT).</li>
       </ul>
     `,
