@@ -16,6 +16,42 @@ const projectsData = {
       </ul>
     `,
   },
+  waTracker: {
+    role: "Backend Developer",
+    company: "External Projects",
+    title: "Headless WhatsApp Tracking Middleware",
+    stack: ["Node.js", "Express", "RESTful API", "Webhooks"],
+    desc: "A headless middleware service built to monitor and sync WhatsApp conversations between sales teams and customers directly into a central Laravel CRM.",
+    images: [],
+    body: `
+      <p>A microservice acting as a bridge between WhatsApp WebSockets and a Laravel Customer Relationship Management System to track sales interactions in real-time.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Developed a headless WhatsApp client using Node.js, Express, and the Baileys library.</li>
+        <li>Implemented real-time message listening and forwarded incoming/outgoing chats via webhooks to a central Laravel API.</li>
+        <li>Engineered an in-memory session management system to handle multiple active WhatsApp instances and QR code logins.</li>
+        <li>Ensured seamless connection stability with auto-reconnect handling and session cleanup mechanisms.</li>
+      </ul>
+    `,
+  },
+  kayabaSsoPortal: {
+    role: "Full Stack Developer",
+    company: "PT KAYABA INDONESIA",
+    title: "Kayaba SSO Portal",
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "NextAuth"],
+    desc: "A centralized Single Sign-On (SSO) enterprise portal providing a unified application launcher and seamless authentication across internal company systems.",
+    images: [],
+    body: `
+      <p>A modern enterprise portal built to streamline access to various internal systems using a unified Single Sign-On (SSO) environment.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Developed a centralized Single Sign-On (SSO) gateway using Next.js and NextAuth.js to eliminate redundant logins across multiple internal applications.</li>
+        <li>Engineered a dynamic application launcher with a clean, corporate Soft UI design aesthetic to improve user experience.</li>
+        <li>Implemented a global command palette (Ctrl + K shortcut) for instant application search and rapid navigation.</li>
+        <li>Secured client-side routes and managed user sessions efficiently using JSON Web Tokens (JWT).</li>
+      </ul>
+    `,
+  },
   budget: {
     role: "Full Stack Developer",
     company: "PT KAYABA INDONESIA",
@@ -31,6 +67,24 @@ const projectsData = {
         <li>Implemented document import and export features using supporting libraries to streamline budget data management.</li>
         <li>Designed a structured multi-level approval workflow across different management levels.</li>
         <li>Reduced the budget preparation and approval process from months to just a few days.</li>
+      </ul>
+    `,
+  },
+  monitoring: {
+    role: "Backend Developer",
+    company: "PT KAYABA INDONESIA",
+    title: "Stock Monitoring System",
+    stack: ["Laravel", "MySQL", "RESTful API", "Bootstrap"],
+    desc: "An end-to-end stock monitoring system developed to provide internal teams with a real-time dashboard and suppliers with RESTful API access for stock management.",
+    images: [],
+    body: `
+      <p>A comprehensive tracking solution bridging internal inventory management with external supplier data exchange through secure APIs.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Built internal dashboard to monitor stock levels, trends, and discrepancies in real-time.</li>
+        <li>Developed RESTful API to enable supplier systems to push and pull stock data securely.</li>
+        <li>Supported manual input within the system and import/export of stock data via Excel.</li>
+        <li>Streamlined stock synchronization and improved accuracy of internal and supplier data exchange.</li>
       </ul>
     `,
   },
@@ -53,44 +107,9 @@ const projectsData = {
       </ul>
     `,
   },
-  recruitment: {
-    role: "Backend Developer",
-    company: "PT KAYABA INDONESIA",
-    title: "Recruitment System Enhancement",
-    stack: ["MySQL", "Data Encryption", "OCR Verification"],
-    desc: "An enhancement to the company’s recruitment system aimed at accelerating the candidate screening process and improving document security through automated verification and data encryption.",
-    images: [],
-    body: `
-      <p>Upgrading the recruitment workflow with layers of security and automated validation.</p>
-      <h3>Key Features:</h3>
-      <ul>
-        <li>Enhanced the recruitment system by implementing sensitive data encryption to improve applicant document security.</li>
-        <li>Integrated OCR technology through a third-party vendor API to automatically verify identity documents and academic certificates.</li>
-        <li>Enabled HR teams to accelerate document validation processes while minimizing manual input errors.</li>
-      </ul>
-    `,
-  },
-  monitoring: {
-    role: "Backend Developer",
-    company: "PT KAYABA INDONESIA",
-    title: "Stock Monitoring System",
-    stack: ["Laravel", "MySQL", "RESTful API", "Bootstrap"],
-    desc: "An end-to-end stock monitoring system developed to provide internal teams with a real-time dashboard and suppliers with RESTful API access for stock management.",
-    images: [],
-    body: `
-      <p>A comprehensive tracking solution bridging internal inventory management with external supplier data exchange through secure APIs.</p>
-      <h3>Key Features:</h3>
-      <ul>
-        <li>Built internal dashboard to monitor stock levels, trends, and discrepancies in real-time.</li>
-        <li>Developed RESTful API to enable supplier systems to push and pull stock data securely.</li>
-        <li>Supported manual input within the system and import/export of stock data via Excel.</li>
-        <li>Streamlined stock synchronization and improved accuracy of internal and supplier data exchange.</li>
-      </ul>
-    `,
-  },
   documentControl: {
     role: "Full Stack Developer",
-    company: "External Projects",
+    company: "PT KAYABA INDONESIA",
     title: "Document Control System",
     stack: ["Laravel", "MySQL", "Bootstrap"],
     desc: "A web-based document management system allowing each department to upload documents for review and approval by the Quality Management System (QMS) Department before distribution.",
@@ -107,21 +126,20 @@ const projectsData = {
       </ul>
     `,
   },
-  waTracker: {
+  recruitment: {
     role: "Backend Developer",
-    company: "External Projects",
-    title: "Headless WhatsApp Tracking Middleware",
-    stack: ["Node.js", "Express", "RESTful API", "Webhooks"],
-    desc: "A headless middleware service built to monitor and sync WhatsApp conversations between sales teams and customers directly into a central Laravel CRM.",
+    company: "PT KAYABA INDONESIA",
+    title: "Recruitment System Enhancement",
+    stack: ["MySQL", "Data Encryption", "OCR Verification"],
+    desc: "An enhancement to the company’s recruitment system aimed at accelerating the candidate screening process and improving document security through automated verification and data encryption.",
     images: [],
     body: `
-      <p>A microservice acting as a bridge between WhatsApp WebSockets and a Laravel Customer Relationship Management System to track sales interactions in real-time.</p>
+      <p>Upgrading the recruitment workflow with layers of security and automated validation.</p>
       <h3>Key Features:</h3>
       <ul>
-        <li>Developed a headless WhatsApp client using Node.js, Express, and the Baileys library.</li>
-        <li>Implemented real-time message listening and forwarded incoming/outgoing chats via webhooks to a central Laravel API.</li>
-        <li>Engineered an in-memory session management system to handle multiple active WhatsApp instances and QR code logins.</li>
-        <li>Ensured seamless connection stability with auto-reconnect handling and session cleanup mechanisms.</li>
+        <li>Enhanced the recruitment system by implementing sensitive data encryption to improve applicant document security.</li>
+        <li>Integrated OCR technology through a third-party vendor API to automatically verify identity documents and academic certificates.</li>
+        <li>Enabled HR teams to accelerate document validation processes while minimizing manual input errors.</li>
       </ul>
     `,
   },
