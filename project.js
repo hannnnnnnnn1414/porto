@@ -18,20 +18,15 @@ const projectsData = {
   },
   waTracker: {
     role: "Backend Developer",
-    company: "External Projects",
+    company: "External/Freelance Project",
     title: "Headless WhatsApp Tracking Middleware",
-    stack: ["Node.js", "Express", "RESTful API", "Webhooks"],
+    stack: ["Node.js", "Express", "PostgreSQL", "Prisma ORM", "RESTful API", "Webhooks"],
     desc: "A headless middleware service built to monitor and sync WhatsApp conversations between sales teams and customers directly into a central Laravel CRM.",
     images: [],
     body: `
-      <p>A microservice acting as a bridge between WhatsApp WebSockets and a Laravel Customer Relationship Management System to track sales interactions in real-time.</p>
-      <h3>Key Features:</h3>
+      <p>Acting as a bridge between WhatsApp WebSockets and a Laravel Customer Relationship Management System to track sales interactions in real-time.</p> <h3>Key Features:</h3>
       <ul>
-        <li>Developed a headless WhatsApp client using Node.js, Express, and the Baileys library.</li>
-        <li>Implemented real-time message listening and forwarded incoming/outgoing chats via webhooks to a central Laravel API.</li>
-        <li>Engineered an in-memory session management system to handle multiple active WhatsApp instances and QR code logins.</li>
-        <li>Ensured seamless connection stability with auto-reconnect handling and session cleanup mechanisms.</li>
-      </ul>
+        <li>Implemented real-time message listening and forwarded incoming/outgoing chats via webhooks to a central Laravel API.</li> <li>Migrated session management from volatile in-memory storage to PostgreSQL via Prisma ORM, ensuring session persistence across server restarts and eliminating manual re-authentication.</li> <li>Engineered a message persistence layer that records all incoming and outgoing WhatsApp messages to a PostgreSQL database, enabling full audit trail and analytics capability.</li> <li>Ensured seamless connection stability with auto-reconnect handling and session cleanup mechanisms.</li> <li>Exposed a RESTful API layer to support external consumers (dashboard, CRM integrations) with endpoints for session lifecycle management and paginated message history.</li> </ul>
     `,
   },
   kayabaSsoPortal: {
@@ -48,6 +43,24 @@ const projectsData = {
         <li>Developed a centralized Single Sign-On (SSO) gateway using Next.js and NextAuth.js to eliminate redundant logins across multiple internal applications.</li>
         <li>Engineered a dynamic application launcher with a clean, corporate Soft UI design aesthetic to improve user experience.</li>
         <li>Secured client-side routes and managed user sessions efficiently using JSON Web Tokens (JWT).</li>
+      </ul>
+    `,
+  },
+  waDashboard: {
+    role: "Frontend Developer",
+    company: "External/Freelance Project",
+    title: "WhatsApp Session Monitoring Dashboard",
+    stack: ["React", "Vite", "Tailwind CSS", "Axios"],
+    desc: "An interface designed to provide real-time operational visibility and session management for the WhatsApp middleware service.",
+    images: [],
+    body: `
+      <p>A web-based interface providing real-time operational visibility and session management for headless WhatsApp services.</p>
+      <h3>Key Features:</h3>
+      <ul>
+        <li>Built a real-time session monitoring interface with live status polling, displaying connection state, phone number, and activity timestamps per session.</li>
+        <li>Implemented in-browser QR code rendering to enable WhatsApp device linking directly from the dashboard without terminal access.</li>
+        <li>Developed a paginated message log inspector to browse and audit incoming/outgoing message history per session.</li>
+        <li>Designed session lifecycle controls (connect, logout, delete) providing full operational management through a clean UI.</li>
       </ul>
     `,
   },
