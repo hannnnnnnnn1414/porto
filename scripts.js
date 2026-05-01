@@ -2454,22 +2454,20 @@ toggleBtn.addEventListener("click", () => {
 });
 
 if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+  const playBtnEl = document.getElementById("playBtn");
+  if (playBtnEl) {
+    playBtnEl.addEventListener("touchend", function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (typeof window.initGame === "function") window.initGame();
+    });
+  }
+
   const moonContainerEl = document.querySelector(".moon-container");
   if (moonContainerEl) {
     moonContainerEl.addEventListener("touchend", function (e) {
       e.preventDefault();
-
       if (window.isMoonExploding) return;
-
-      const playBtnEl = document.getElementById("playBtn");
-      const touch = e.changedTouches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-
-      if (playBtnEl && playBtnEl.contains(target)) {
-        if (typeof window.initGame === "function") window.initGame();
-        return;
-      }
-
       if (typeof window.triggerMoonExplosion === "function") {
         window.triggerMoonExplosion();
       }
