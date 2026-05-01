@@ -1972,3 +1972,14 @@ body.light #joystickZone {
     transform: scaleY(1.2);
   }
 }
+
+@media (max-width: 768px) {
+  .hero-cta .terminal-prompt-container {
+    display: none !important;
+  }
+
+  .hero-scroll {
+    margin-top: 3rem;
+    font-size: 0.75rem;
+  }
+}

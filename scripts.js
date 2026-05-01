@@ -152,7 +152,7 @@
   const enemyShooterImage = createEnemyCache(22);
   const enemyKamikazeImage = createEnemyCache(14);
 
-  function initGame() {
+  window.initGame = function initGame() {
     document.body.classList.add("game-mode");
     isGameMode = true;
     score = 0;
@@ -169,7 +169,7 @@
     r.x = window.innerWidth / 2;
     r.y = window.innerHeight - 100;
     resize();
-  }
+  };
 
   function exitGame() {
     document.body.classList.remove("game-mode");
@@ -188,7 +188,7 @@
   }
 
   const playBtn = document.getElementById("playBtn");
-  if (playBtn) playBtn.addEventListener("click", initGame);
+  if (playBtn) playBtn.addEventListener("click", window.initGame);
   exitBtn.addEventListener("click", exitGame);
 
   function resize() {
@@ -2452,3 +2452,27 @@ toggleBtn.addEventListener("click", () => {
   }
   isPlaying = !isPlaying;
 });
+
+if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+  const moonContainerEl = document.querySelector(".moon-container");
+  if (moonContainerEl) {
+    moonContainerEl.addEventListener("touchend", function (e) {
+      e.preventDefault();
+
+      if (window.isMoonExploding) return;
+
+      const playBtnEl = document.getElementById("playBtn");
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      if (playBtnEl && playBtnEl.contains(target)) {
+        if (typeof window.initGame === "function") window.initGame();
+        return;
+      }
+
+      if (typeof window.triggerMoonExplosion === "function") {
+        window.triggerMoonExplosion();
+      }
+    });
+  }
+}
